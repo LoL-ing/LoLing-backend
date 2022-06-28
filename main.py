@@ -7,14 +7,9 @@ from db_connection.rds import exec_fetch_query, get_rds_db_connection, close_rds
 app = FastAPI()
 load_dotenv()
 
-print("test : " ,exec_fetch_query("""
-SELECT *
-  FROM test;
-"""))
-
 @app.get("/")
 async def root():
-    return {"config": environ['RDS_HOSTNAME']}
+    return {"config": environ.get("RDS_HOSTNAME")}
 
 @app.get("/Friends")
 def route_get_friends():
