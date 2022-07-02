@@ -4,7 +4,9 @@ from dotenv.main import load_dotenv
 from os import environ
 
 from db_connection.rds import get_rds_db_connection
-
+from db_connection.rds.insert_dummy import insert_friends, delete_friends
+delete_friends()
+insert_friends()
 app = FastAPI()
 load_dotenv()
 
