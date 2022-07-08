@@ -19,7 +19,7 @@ jobs:
           ps aux | grep 'port 8000' | grep -v grep | awk {'print $2'} | xargs
       - name: pull develop branch
         run: |
-          cd /home/ubuntu/LoLing-be
+          cd /home/ubuntu/LoLing-backend
           git pull origin master
           sleep 3
           git checkout master
