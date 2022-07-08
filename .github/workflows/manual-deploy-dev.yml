@@ -1,0 +1,34 @@
+name: deploy-dev
+
+# Controls when the action will run. Workflow runs when manually triggered using the UI
+# or API.
+on:
+  workflow_dispatch:
+jobs:
+  deploy-flow:
+    runs-on: LoLing-backend-master-deploy
+    steps:
+      - name: check current processes
+        run : 
+          ps aux | grep 'port 8000' | grep -v grep | awk {'print $2'} | xargs
+      - name: kill current dev servers
+        run : 
+          sudo kill -9 `pgrep -f 'port 8000'`
+      - name: check current processes
+        run : 
+          ps aux | grep 'port 8000' | grep -v grep | awk {'print $2'} | xargs
+      - name: pull develop branch
+        run: |
+          cd /home/ubuntu/LoLing-be
+          git pull origin master
+          sleep 3
+          git checkout master
+      - name: activate venv
+        run:
+          source /home/ubuntu/LoLing-backend/venv/bin/activate
+      - name: run server
+        run:
+          sudo nohup /home/ubuntu/LoLing-backend/venv/bin/python3 -m uvicorn main:app --port 8000 &
+      - name: print processes
+        run:
+            ps aux | grep 'port 8000' | grep -v grep | awk {'print $2'} | xargs
