@@ -6,7 +6,7 @@ on:
   push:
 jobs:
   deploy-flow:
-    runs-on: LoLing-backend-master-deploy
+    runs-on: self-hosted
     steps:
       - name: check current processes
         run : 
