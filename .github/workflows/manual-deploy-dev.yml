@@ -28,7 +28,7 @@ jobs:
           source /home/ubuntu/LoLing-backend/venv/bin/activate
       - name: run server
         run:
-          sudo nohup /home/ubuntu/LoLing-backend/venv/bin/python3 -m uvicorn main:app --port 8000 &
+           sudo nohup python3 -m uvicorn main:app --port 8000 &
       - name: print processes
         run:
             ps aux | grep 'port 8000' | grep -v grep | awk {'print $2'} | xargs
