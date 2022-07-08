@@ -70,10 +70,10 @@ def get_all_profiles():
     profiles_response = exec_query(rds_conn, select_query, True)
     sample_data =   [{
         **data,
-        "profileImg": "/assets/images/Nunu.png",
+        "profileImg": "../assets/images/Nunu.png",
         "line": data.get("line")[0],
-        "mannerTierImg": "/assets/images/Nunu.png",
-        "championImg": "/assets/images/Nunu.png",
+        "mannerTierImg": "../assets/images/Nunu.png",
+        "championImg": "../assets/images/Nunu.png",
         "winRate": "99%",
         "winLose": "99%",
         "lineImg_1":"../assets/images/Nunu.png",
