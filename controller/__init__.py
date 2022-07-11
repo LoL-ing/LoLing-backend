@@ -31,10 +31,10 @@ def get_lol_account(flag = True, user_num = 0):
         **data,
         "lol_name" : data.get("lol_name"),
         "tier" : data.get("tier"),
-        "mostChampKDA" : data.get("champ_kda")[0],
-        "mostChampWinRate" : data.get("champ_win_rate")[0],
-        "mostLineKDA" : data.get("line_kda")[0],
-        "mostLineWinRate" : data.get("line_win_rate")[0] 
+        "mostChampKDA" : data.get("champ_kda")[1],
+        "mostChampWinRate" : data.get("champ_win_rate")[1],
+        "mostLineKDA" : data.get("line_kda")[1],
+        "mostLineWinRate" : data.get("line_win_rate")[1] 
 
         
   } for data in lol_account ] 
