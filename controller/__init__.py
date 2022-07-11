@@ -18,25 +18,29 @@ def get_friends(flag = True, user_num = 0):
 def get_lol_account(flag = True, user_num = 0):
     rds_conn = get_rds_db_connection()
     select_query = """
-    SELECT *
+    SELECT lol_name
+         , tier
+         , JSON_UNQUOTE(champ_kda) as champ_kda
+         , JSON_UNQUOTE(champ_win_rate) as champ_win_rate
+         , JSON_UNQUOTE(line_kda) as line_kda
+         , JSON_UNQUOTE(line_win_rate) as line_win_rate
       FROM LOL_ACCOUNT
     ;
     """
 
     lol_account =  exec_query(rds_conn, select_query, True)
+    print(lol_account)
 
 
     sample_data =   [
         {
-        **data,
         "lol_name" : data.get("lol_name"),
         "tier" : data.get("tier"),
-        "mostChampKDA" : data.get("champ_kda")[1],
-        "mostChampWinRate" : data.get("champ_win_rate")[1],
-        "mostLineKDA" : data.get("line_kda")[1],
-        "mostLineWinRate" : data.get("line_win_rate")[1] 
-
-        
+        "mostChampKDA" : data.get("champ_kda")[0],
+        "mostChampWinRate" : data.get("champ_win_rate")[0],
+        "mostLineKDA" : data.get("line_kda")[0],
+        "mostLineWinRate" : data.get("line_win_rate")[0] 
+ 
   } for data in lol_account ] 
 
     return sample_data
