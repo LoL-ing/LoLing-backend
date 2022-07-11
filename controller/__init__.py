@@ -10,8 +10,31 @@ def get_friends(flag = True, user_num = 0):
     ;
     """
 
+
+
+
     return exec_query(rds_conn, select_query, True)
 
+def get_lol_account(flag = True, user_num = 0):
+    rds_conn = get_rds_db_connection()
+    select_query = """
+    SELECT *
+      FROM LOL_ACCOUNT
+    ;
+    """
+
+    return exec_query(rds_conn, select_query, True)
+
+
+
+#     username: '하아아푸움',
+#     tier: 'Gold 3',
+#     mostChampImg: require('../assets/images/Nunu.png'),
+#     mostChampWinRate: '57%',
+#     mostChampKDA: '3.87',
+#     mostLineImg: require('../assets/images/lineJungle.png'),
+#     mostLineWinRate: '57%',
+#     mostLineKDA: '3.87',
 
     """
     db = get_db_connection()

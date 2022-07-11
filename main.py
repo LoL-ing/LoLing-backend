@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request
-from controller import get_friends, get_all_champions, get_all_profiles
+from controller import get_friends, get_all_champions, get_all_profiles, get_lol_account
 from dotenv.main import load_dotenv
 from os import environ
 
@@ -19,6 +19,10 @@ async def root(request:Request):
 @app.get("/friends")
 def route_get_friends():
     return get_friends()
+
+@app.get("/lol_account")
+def route_get_lol_account():
+    return get_lol_account()
 
 @app.get("/profiles")
 def route_get_profiles():
