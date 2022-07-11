@@ -22,6 +22,7 @@ def route_get_friends():
 
 @app.get("/lol_account")
 def route_get_lol_account():
+    
     return get_lol_account()
 
 @app.get("/profiles")

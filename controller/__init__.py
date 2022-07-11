@@ -23,7 +23,23 @@ def get_lol_account(flag = True, user_num = 0):
     ;
     """
 
-    return exec_query(rds_conn, select_query, True)
+    lol_account =  exec_query(rds_conn, select_query, True)
+
+
+    sample_data =   [
+        {
+        **data,
+        "lol_name" : data.get("lol_name"),
+        "tier" : data.get("tier"),
+        "mostChampKDA" : data.get("champ_kda")[0],
+        "mostChampWinRate" : data.get("champ_win_rate")[0],
+        "mostLineKDA" : data.get("line_kda")[0],
+        "mostLineWinRate" : data.get("line_win_rate")[0] 
+
+        
+  } for data in lol_account ] 
+
+    return sample_data
 
 
 
