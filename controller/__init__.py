@@ -69,8 +69,14 @@ def get_lol_account(flag = True, user_num = 0):
     """
 
 def get_all_champions():
-    collection_name = get_db_connection()
-    return collection_name['Champions'].find()
+    rds_conn = get_rds_db_connection()
+    select_query = """
+    SELECT *
+      FROM CHAMPIONS
+    ;
+    """
+
+    return exec_query(rds_conn, select_query, True)
 
 def get_all_profiles():
     rds_conn = get_rds_db_connection()
