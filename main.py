@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Request
 from controller import get_friends, get_all_champions, get_all_profiles, get_lol_account
+from controller.user import *
 from dotenv.main import load_dotenv
 from os import environ
 
@@ -32,3 +33,13 @@ def route_get_profiles():
 @app.get("/champions")
 def route_get_champions():
     return get_all_champions()
+
+
+@app.get("/auth")
+def route_get_auth():
+    return get_kakao_auth()
+
+@app.get("/callback")
+def route_get_token(request: Request): # 사람들의 말을 들어야하는 이유가 있으며 사람듣ㄹ의 말을 들어야하는 이유가 잇다.
+    code = request.query_params['code']
+    return get_kakao_token(code)
