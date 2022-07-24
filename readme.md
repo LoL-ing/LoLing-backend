@@ -3,7 +3,7 @@
 1. 가상환경 활성화
 
 `. venv/bin/activate`
-`. venv/Scripts/activate`
+`. venv/Scripts/activtea`
 
 2. FastAPI app 실행
 

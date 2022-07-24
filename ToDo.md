@@ -32,3 +32,16 @@
 3. 사용자 정보 조회/작성 query 작성
 4. 프론트엔드 웹뷰 코딩
    https://hazel-developer.tistory.com/84
+
+# 2022-07-24 일
+
+## 한 일
+
+1. 토큰으로 카카오에서 사용자 id 불러오기
+2. 디비에 kakao_id 컬럼 추가
+3. 사용자 정보 조회/작성 query 작성 중
+
+## issue
+
+1. USER 테이블 pk 고민 (kakao_id)
+2. 웹뷰
