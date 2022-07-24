@@ -7,7 +7,7 @@ from db_connection.rds import get_rds_db_connection, exec_query, exec_insert_que
 import json
 
 REST_API_KEY = 'fea04d110f5bcad28342dc2f41563a09'
-REDIRECT_URI = 'http://localhost:8000/callback'
+REDIRECT_URI = 'http://54.153.85.38/callback'
 
 # 인가 코드 받기
 
