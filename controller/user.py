@@ -27,13 +27,13 @@ def get_user_info(user_id):
     return user_response[0]
 
 
-async def sign_in(user_id, password):
-    is_exist = get_user_info(user_id)
+async def sign_in(email, password):
+    is_exist = get_user_info(email)
     if is_exist:
         is_verified = bcrypt.checkpw(
             password.encode('utf-8'), bcrypt.hashpw(is_exist['password'].encode("utf-8"), bcrypt.gensalt()))
         if is_verified:
-            token = jwt.encode({"user_id": user_id}, secret_key, algorithm)
+            token = jwt.encode({"email": email}, secret_key, algorithm)
             return token
             # return {"access_token": token, "token_type": "bearer"}
     else:

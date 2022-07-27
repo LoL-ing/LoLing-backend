@@ -52,8 +52,10 @@ def route_register():
 
 
 @app.get("/sign_in")
-async def route_sign_in(user_id: str, password: str):
-    return await sign_in(user_id=user_id, password=password)
+async def route_sign_in(request: Request):
+    email = request.query_params['email']
+    password = request.query_params['password']
+    return await sign_in(email=email, password=password)
 
 
 @app.get("/kakao_auth")
