@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Request
 from controller import get_friends, get_all_champions, get_all_profiles, get_lol_account
+from controller.kakaouser import *
 from controller.user import *
 from dotenv.main import load_dotenv
 from os import environ
@@ -40,8 +41,24 @@ def route_get_champions():
     return get_all_champions()
 
 
-@app.get("/auth")
-def route_get_auth():
+@app.get("/get_user_info")
+def route_get_user_info(user_id: str):
+    # user_id = request.query_params['id']
+    return get_user_info(user_id=user_id)
+
+
+@app.get("/register")
+def route_register():
+    return register()
+
+
+@app.get("/sign_in")
+def route_sign_in():
+    return sign_in()
+
+
+@app.get("/kakao_auth")
+def route_get_kakao_auth():
     return get_kakao_auth()
 
 

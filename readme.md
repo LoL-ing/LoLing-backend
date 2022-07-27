@@ -11,3 +11,5 @@
 
 3. Window 에서 mongodb 연결 안될 때 (양여름)
    a. https://blog.minamiland.com/551
+
+pip install -r requirements.txt
