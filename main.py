@@ -43,7 +43,6 @@ def route_get_champions():
 
 @app.get("/get_user_info")
 def route_get_user_info(user_id: str):
-    # user_id = request.query_params['id']
     return get_user_info(user_id=user_id)
 
 
@@ -53,8 +52,8 @@ def route_register():
 
 
 @app.get("/sign_in")
-def route_sign_in():
-    return sign_in()
+async def route_sign_in(user_id: str, password: str):
+    return await sign_in(user_id=user_id, password=password)
 
 
 @app.get("/kakao_auth")

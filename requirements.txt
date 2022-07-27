@@ -17,3 +17,5 @@ starlette==0.19.1
 typing_extensions
 uvicorn
 requests
+bcrypt
+PyJWT

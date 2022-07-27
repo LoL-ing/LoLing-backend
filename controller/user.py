@@ -1,4 +1,13 @@
 from db_connection.rds import get_rds_db_connection, exec_query, exec_insert_query
+from dotenv.main import load_dotenv
+import os
+import bcrypt
+import jwt
+
+
+load_dotenv()
+secret_key = os.environ.get("SECRET_KEY")
+algorithm = os.environ.get("ALGORITHM")
 
 
 def get_user_info(user_id):
@@ -9,17 +18,26 @@ def get_user_info(user_id):
     select_query = """
     SELECT *
       FROM USER
-     WHERE phone_num = %(user_id)s
+     WHERE signin_id = %(user_id)s
     ;
     """
     user_response = exec_query(
         rds_conn, select_query, True, input_params=user_data)
 
-    return user_response
+    return user_response[0]
 
 
-def sigin_in():
-    return 0
+async def sign_in(user_id, password):
+    is_exist = get_user_info(user_id)
+    if is_exist:
+        is_verified = bcrypt.checkpw(
+            password.encode('utf-8'), bcrypt.hashpw(is_exist['password'].encode("utf-8"), bcrypt.gensalt()))
+        if is_verified:
+            token = jwt.encode({"user_id": user_id}, secret_key, algorithm)
+            return token
+            # return {"access_token": token, "token_type": "bearer"}
+    else:
+        return False
 
 
 def register(user_id, password):
