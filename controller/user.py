@@ -3,6 +3,7 @@ from dotenv.main import load_dotenv
 import os
 import bcrypt
 import jwt
+from model.user import userArgument
 from starlette.responses import JSONResponse
 
 load_dotenv()
@@ -55,11 +56,11 @@ async def sign_in(email, password):
         #아이디(이메일)가 없음, 회원정보 없음
         return JSONResponse(status_code=400, content=dict(msg="등록된 회원이 아닙니다."))
 
-def register(email, password):
+def register(argument:userArgument):
     rds_conn = get_rds_db_connection()
     user_data = {
-        "email": email,
-        "password" : password
+        "email": argument.get("email"),
+        "password" : argument.get("password")
     }
     insert_query = """
     INSERT INTO LoLing.USER(

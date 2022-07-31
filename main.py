@@ -3,7 +3,9 @@ from controller import get_friends, get_all_champions, get_all_profiles, get_lol
 from controller.kakaouser import *
 from controller.user import *
 from dotenv.main import load_dotenv
+from fastapi.encoders import jsonable_encoder
 from os import environ
+from model.user import userArgument
 
 from db_connection.rds import get_rds_db_connection
 # from db_connection.rds.insert_dummy import insert_friends, delete_friends
@@ -49,9 +51,10 @@ def route_get_user_info(user_id: str):
 def route_email_auth(email: str):
     return email_auth(email=email)
 
-@app.get("/register")
-def route_register(email: str, password: str):
-    return register(email=email, password=password)
+
+@app.post("/register", summary="회원가입", description="회원가입 정보 post")
+def route_register(argument:userArgument):
+    return register(jsonable_encoder(argument))
 
 
 @app.get("/sign_in")
