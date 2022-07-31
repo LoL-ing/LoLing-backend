@@ -87,12 +87,12 @@ def get_all_profiles(lol_name: str):
     champ_query = """
     SELECT B.*
         , C.*
-        FROM USERS.LOL_ACCOUNT A
-        LEFT OUTER JOIN USERS.USER_CHAMPION_MAP B
+      FROM USERS.LOL_ACCOUNT A
+      LEFT OUTER JOIN USERS.USER_CHAMPION_MAP B
         ON B.LOL_NAME = A.LOL_NAME
-        LEFT OUTER JOIN CHAMPIONS C
+      LEFT OUTER JOIN CHAMPIONS C
         ON C.CHAMP_NAME = B.CHAMP_NAME
-        WHERE A.LOL_NAME = %(lol_name)s
+     WHERE A.LOL_NAME = %(lol_name)s
     ;
     """
     champ_response = exec_query(rds_conn, champ_query, True, input_params=where_arg)
