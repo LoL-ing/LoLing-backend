@@ -2,59 +2,60 @@ from db_connection.mongo import get_db_connection
 from db_connection.rds import get_rds_db_connection, exec_query
 import json
 
-def get_friends(flag = True, user_num = 0):
+
+def get_friends(flag=True, user_num=0):
     rds_conn = get_rds_db_connection()
     select_query = """
     SELECT *
-      FROM FRIENDS
+      FROM USERS.USER_FRIEND_MAP
     ;
     """
-
-
-
 
     return exec_query(rds_conn, select_query, True)
 
-def get_lol_account(flag = True, user_num = 0):
+
+def get_lol_account(user_id: str, flag=True, user_num=0):
     rds_conn = get_rds_db_connection()
+    where_arg = {"user_id": user_id}
     select_query = """
-    SELECT lol_name
-         , tier
-         , JSON_UNQUOTE(champ_kda) as champ_kda
-         , JSON_UNQUOTE(champ_win_rate) as champ_win_rate
-         , JSON_UNQUOTE(line_kda) as line_kda
-         , JSON_UNQUOTE(line_win_rate) as line_win_rate
-      FROM LOL_ACCOUNT
+    SELECT C.*
+         , JSON_UNQUOTE(C.champ_kda) as champ_kda
+         , JSON_UNQUOTE(C.champ_win_rate) as champ_win_rate
+         , JSON_UNQUOTE(C.line_kda) as line_kda
+         , JSON_UNQUOTE(C.line_win_rate) as line_win_rate
+      FROM USERS.USER A
+      LEFT OUTER JOIN USERS.USER_LOL_ACCOUNT_MAP B
+        ON A.SIGNIN_ID = B.SIGNIN_ID
+      LEFT OUTER JOIN USERS.LOL_ACCOUNT C
+        ON B.LOL_NAME = C.LOL_NAME
+     WHERE A.SIGNIN_ID = %(user_id)s
     ;
     """
 
-    lol_account =  exec_query(rds_conn, select_query, True)
-    print(lol_account)
+    lol_account = exec_query(rds_conn, select_query, True, input_params=where_arg)
 
-
-    sample_data =   [
+    sample_data = [
         {
-        "lol_name" : data.get("lol_name"),
-        "tier" : data.get("tier"),
-        "mostChampKDA" : data.get("champ_kda")[0],
-        "mostChampWinRate" : data.get("champ_win_rate")[0],
-        "mostLineKDA" : data.get("line_kda")[0],
-        "mostLineWinRate" : data.get("line_win_rate")[0] 
- 
-  } for data in lol_account ] 
+            "lol_name": data.get("lol_name"),
+            "tier": data.get("tier"),
+            "mostChampKDA": json.loads(data.get("champ_kda"))[1],
+            "mostChampWinRate": json.loads(data.get("champ_win_rate"))[1],
+            "mostLineKDA": json.loads(data.get("line_kda"))[1],
+            "mostLineWinRate": json.loads(data.get("line_win_rate"))[1],
+        }
+        for data in lol_account
+    ]
 
     return sample_data
 
-
-
-#     username: '하아아푸움',
-#     tier: 'Gold 3',
-#     mostChampImg: require('../assets/images/Nunu.png'),
-#     mostChampWinRate: '57%',
-#     mostChampKDA: '3.87',
-#     mostLineImg: require('../assets/images/lineJungle.png'),
-#     mostLineWinRate: '57%',
-#     mostLineKDA: '3.87',
+    #     username: '하아아푸움',
+    #     tier: 'Gold 3',
+    #     mostChampImg: require('../assets/images/Nunu.png'),
+    #     mostChampWinRate: '57%',
+    #     mostChampKDA: '3.87',
+    #     mostLineImg: require('../assets/images/lineJungle.png'),
+    #     mostLineWinRate: '57%',
+    #     mostLineKDA: '3.87',
 
     """
     db = get_db_connection()
@@ -68,6 +69,7 @@ def get_lol_account(flag = True, user_num = 0):
         return []
     """
 
+
 def get_all_champions():
     rds_conn = get_rds_db_connection()
     select_query = """
@@ -78,70 +80,60 @@ def get_all_champions():
 
     return exec_query(rds_conn, select_query, True)
 
-def get_all_profiles():
+
+def get_all_profiles(lol_name: str):
     rds_conn = get_rds_db_connection()
-
-    # JSON SEARCH 로 array 안의 것들을 join 할 수 있지만, 
-    # 두 개 이상의 JSON ARRAY SEARCH 를 한다면, 3의 제곱의 row 가 나옴.
-    # Img url 을 위해서 join 을 하는 것보다는, champion name 과 img url 코드를 통일시켜
-    # 백엔드에서 만들어 보내주든지, 프론트에서 만들어 처리하는 것이 나을 듯
-    # https://stackoverflow.com/questions/39818296/using-mysql-json-field-to-join-on-a-table
-    # -김민규-
-    # select_query = """
-    #     SELECT A.*
-    #         -- B.champion_name,
-    #         -- B.image_uri 
-    #         -- C.line_name
-    #     FROM USER A
-    #     -- LEFT OUTER JOIN CHAMPION B
-    #         -- ON JSON_SEARCH(A.my_champ, 'one', B.champion_name)
-    #     -- LEFT OUTER JOIN LINE C
-    #         -- ON JSON_SEARCH(A.my_line, 'one', C.line_name)
-    #     ;
-    # """
-
-    select_query = """
-        select A.lol_name as nickname
-            , B.name as lolingId
-            , A.tier as tier
-            , JSON_UNQUOTE(B.my_line) as line
-            , JSON_UNQUOTE(A.champ_win_rate) as champ_win_rate
-            , JSON_UNQUOTE(A.champ_kda) as champ_kda
-            , JSON_UNQUOTE(A.line_win_rate) as line_winRate
-            , JSON_UNQUOTE(A.line_kda) as line_kda
-            , B.self_desc as description
-          from LOL_ACCOUNT A
-          left outer join USER B
-            on A.lol_name = B.lol_name
-        ;
-
+    where_arg = {"lol_name": lol_name}
+    champ_query = """
+    SELECT B.*
+        , C.*
+        FROM USERS.LOL_ACCOUNT A
+        LEFT OUTER JOIN USERS.USER_CHAMPION_MAP B
+        ON B.LOL_NAME = A.LOL_NAME
+        LEFT OUTER JOIN CHAMPIONS C
+        ON C.CHAMP_NAME = B.CHAMP_NAME
+        WHERE A.LOL_NAME = %(lol_name)s
+    ;
     """
-    profiles_response = exec_query(rds_conn, select_query, True)
-    sample_data =   [{
-        **data,
+    champ_response = exec_query(rds_conn, champ_query, True, input_params=where_arg)
+
+    line_query = """
+    SELECT B.*
+         , C.*
+      FROM USERS.LOL_ACCOUNT A
+      LEFT OUTER JOIN USERS.USER_LINE_MAP B
+        ON B.LOL_NAME = A.LOL_NAME
+      LEFT OUTER JOIN LINE C
+        ON C.LINE_NAME = B.LINE_NAME
+     WHERE A.LOL_NAME = %(lol_name)s
+     ;
+    """
+    line_response = exec_query(rds_conn, line_query, True, input_params=where_arg)
+
+    # return {"champ": champ_response, "line": line_response}
+    sample_data = {
+        "lolingId": champ_response[0].get("lol_name"),
         "profileImg": "../assets/images/Nunu.png",
-        "line": data.get("line")[0],
-        "mannerTierImg": "../assets/images/Nunu.png",
+        "line": line_response[0].get("line_name"),
+        "mannerTierImg": "../assets/images/diamond.png",
         "championImg": "../assets/images/Nunu.png",
         "winRate": "100%",
         "winLose": "100%",
-        "lineImg_1":"../assets/images/Nunu.png",
-        "lineImg_2":"../assets/images/Nunu.png",
-        "line_winRate_1":data.get("line_winRate")[0],
-        "line_winRate_2":data.get("line_winRate")[1],
-        "line_kda_1": data.get("line_kda")[0],
-        "line_kda_2": data.get("line_kda")[1],
-        "championImg_1":"../assets/images/Nunu.png",
-        "championImg_2":"../assets/images/Nunu.png",
-        "championImg_3":"../assets/images/Nunu.png",
-        "champ_winRate_1": data.get("champ_win_rate")[0],
-        "champ_winRate_2": data.get("champ_win_rate")[1],
-        "champ_winRate_3": data.get("champ_win_rate")[2],
-        "champ_kda_1": data.get("champ_kda")[0],
-        "champ_kda_2": data.get("champ_kda")[1],
-        "champ_kda_3": data.get("champ_kda")[2],
-  } for data in profiles_response ] 
+        "lineImg_1": line_response[0].get("image_uri"),
+        "lineImg_2": line_response[1].get("image_uri"),
+        "line_winRate_1": line_response[0].get("line_win_rate"),
+        "line_winRate_2": line_response[1].get("line_win_rate"),
+        "line_kda_1": line_response[0].get("line_kda"),
+        "line_kda_2": line_response[1].get("line_kda"),
+        "championImg_1": champ_response[0].get("champ_img_url"),
+        "championImg_2": champ_response[1].get("champ_img_url"),
+        "championImg_3": champ_response[2].get("champ_img_url"),
+        "champ_winRate_1": champ_response[0].get("champ_win_rate"),
+        "champ_winRate_2": champ_response[1].get("champ_win_rate"),
+        "champ_winRate_3": champ_response[2].get("champ_win_rate"),
+        "champ_kda_1": champ_response[0].get("chmap_kda"),
+        "champ_kda_2": champ_response[1].get("chmap_kda"),
+        "champ_kda_3": champ_response[2].get("chmap_kda"),
+    }
 
     return sample_data
-
-

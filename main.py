@@ -8,6 +8,7 @@ from os import environ
 from model.user import userArgument
 
 from db_connection.rds import get_rds_db_connection
+
 # from db_connection.rds.insert_dummy import insert_friends, delete_friends
 app = FastAPI()
 load_dotenv()
@@ -16,8 +17,7 @@ load_dotenv()
 @app.get("/")
 async def root(request: Request):
     url_list = [
-        {'path': route.path, 'name': route.name}
-        for route in request.app.routes
+        {"path": route.path, "name": route.name} for route in request.app.routes
     ]
     return url_list
 
@@ -28,14 +28,14 @@ def route_get_friends():
 
 
 @app.get("/lol_account")
-def route_get_lol_account():
+def route_get_lol_account(user_id: str):
 
-    return get_lol_account()
+    return get_lol_account(user_id=user_id)
 
 
 @app.get("/profiles")
-def route_get_profiles():
-    return get_all_profiles()
+def route_get_profiles(lol_name: str):
+    return get_all_profiles(lol_name=lol_name)
 
 
 @app.get("/champions")
@@ -47,21 +47,21 @@ def route_get_champions():
 def route_get_user_info(user_id: str):
     return get_user_info(user_id=user_id)
 
+
 @app.get("/email_auth")
 def route_email_auth(email: str):
     return email_auth(email=email)
 
 
 @app.post("/register", summary="회원가입", description="회원가입 정보 post")
-def route_register(argument:userArgument):
+def route_register(argument: userArgument):
     return register(jsonable_encoder(argument))
 
 
 @app.get("/sign_in")
-# async def route_sign_in(request: Request):
-async def route_sign_in(email : str, password: str):
-    # email = request.query_params['email']
-    # password = request.query_params['password']
+async def route_sign_in(request: Request):
+    email = request.query_params["email"]
+    password = request.query_params["password"]
     return await sign_in(email=email, password=password)
 
 
@@ -73,8 +73,9 @@ def route_get_kakao_auth():
 @app.get("/callback")
 # 사람들의 말을 들어야하는 이유가 있으며 사람듣ㄹ의 말을 들어야하는 이유가 잇다.
 def route_get_token(request: Request):
-    code = request.query_params['code']
+    code = request.query_params["code"]
     return get_kakao_token(code)
+
 
 # @app.get("/login")
 # def route_login():
