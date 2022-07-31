@@ -45,16 +45,20 @@ def route_get_champions():
 def route_get_user_info(user_id: str):
     return get_user_info(user_id=user_id)
 
+@app.get("/email_auth")
+def route_email_auth(email: str):
+    return email_auth(email=email)
 
 @app.get("/register")
-def route_register():
-    return register()
+def route_register(email: str, password: str):
+    return register(email=email, password=password)
 
 
 @app.get("/sign_in")
-async def route_sign_in(request: Request):
-    email = request.query_params['email']
-    password = request.query_params['password']
+# async def route_sign_in(request: Request):
+async def route_sign_in(email : str, password: str):
+    # email = request.query_params['email']
+    # password = request.query_params['password']
     return await sign_in(email=email, password=password)
 
 

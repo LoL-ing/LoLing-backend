@@ -57,11 +57,11 @@ def exec_multiple_queries(conn, query_str, input_params=""):
 # INSERT (한줄)
 
 
-def exec_insert_query(conn, query_str, input_param=""):
+def exec_insert_query(conn, query_str, input_params=""):
     try:
         conn = get_rds_db_connection()
         cursor: mysql.connector.connection.MySQLCursor = conn.cursor()
-        cursor.execute(query_str, input_param)
+        cursor.execute(query_str, input_params)
 
     except:
         print("insert 하다가 에러남")
