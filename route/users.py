@@ -8,6 +8,7 @@ from controller.kakaouser import *
 
 router = APIRouter()
 
+
 @router.get("/get_user_info")
 def route_get_user_info(user_id: str):
     return get_user_info(user_id=user_id)
@@ -24,15 +25,15 @@ def route_register(argument: UserRegisterArgument):
 
 
 @router.get("/sign_in")
-async def route_sign_in(request: Request):
-    email = request.query_params["email"]
-    password = request.query_params["password"]
+async def route_sign_in(email: str, password: str):
     return await sign_in(email=email, password=password)
+
 
 # kakao 로그인 시도흔적
 @router.get("/kakao_auth")
 def route_get_kakao_auth():
     return get_kakao_auth()
+
 
 @router.get("/callback")
 def route_get_token(request: Request):
