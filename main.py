@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request
 from route import champions, friends, profiles, profiles, users
 from dotenv.main import load_dotenv
+from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from os import environ
 from exception import *
@@ -22,6 +23,9 @@ async def root(request: Request):
     return url_list
 
 # error handling
+@app.exception_handler(LOLINGDBRequestFailException)
+async def loling_db_request_fail_exception_handler(request: Request, exc: LOLINGDBRequestFailException):
+    return JSONResponse(status_code=400, content={"code": exc.response_code, "message": exc.response_message})
 
 
 
