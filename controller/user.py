@@ -3,8 +3,9 @@ from dotenv.main import load_dotenv
 import os
 import bcrypt
 import jwt
-from model.user import userArgument
+from model.user.request import UserRegisterArgument
 from starlette.responses import JSONResponse
+from query import user as query
 
 load_dotenv()
 secret_key = os.environ.get("SECRET_KEY")
@@ -16,14 +17,9 @@ def get_user_info(user_id):
     user_data = {
         "user_id": user_id
     }
-    select_query = """
-    SELECT *
-      FROM USER
-     WHERE signin_id = %(user_id)s
-    ;
-    """
+    
     user_response = exec_query(
-        rds_conn, select_query, True, input_params=user_data)
+        rds_conn, query.SELECT_USER, True, input_params=user_data)
 
     return user_response
 
@@ -56,33 +52,15 @@ async def sign_in(email, password):
         #아이디(이메일)가 없음, 회원정보 없음
         return JSONResponse(status_code=400, content=dict(msg="등록된 회원이 아닙니다."))
 
-def register(argument:userArgument):
+def register(argument:UserRegisterArgument):
     rds_conn = get_rds_db_connection()
     user_data = {
         "email": argument.get("email"),
         "password" : argument.get("password")
     }
-    insert_query = """
-    INSERT INTO LoLing.USER(
-        signin_id,
-        password,
-        manner_tier,
-        like_cnt,
-        hate_cnt,
-        created_at,
-        updated_at
-    ) VALUES(
-        %(email)s,
-        %(password)s,
-        '골드',
-        0,
-        0,
-        now(),
-        null
-    )
-    """
+    
     print("############### user_info 생성 ###############")
-    return exec_insert_query(rds_conn, insert_query, input_params=user_data)
+    return exec_insert_query(rds_conn, query.INSERT_USER_REGISER, input_params=user_data)
 
 # 미지의 길...이메일 본인인증......
 def email_auth(email):

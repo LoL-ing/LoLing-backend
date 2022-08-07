@@ -1,18 +1,18 @@
 from fastapi import FastAPI, Request
-from controller import get_friends, get_all_champions, get_all_profiles, get_lol_account
-from controller.kakaouser import *
-from controller.user import *
+from route import champions, friends, profiles, profiles, users
 from dotenv.main import load_dotenv
 from fastapi.encoders import jsonable_encoder
 from os import environ
-from model.user import userArgument
+from exception import *
 
-from db_connection.rds import get_rds_db_connection
-
-# from db_connection.rds.insert_dummy import insert_friends, delete_friends
 app = FastAPI()
 load_dotenv()
 
+# attach routers
+app.include_router(champions.router, prefix="/champions", tags=["챔피언"])
+app.include_router(friends.router, prefix="/friends", tags=["친구"])
+app.include_router(profiles.router, prefix="/profiles", tags=["프로필"])
+app.include_router(users.router, prefix="/users", tags=["유저 등록 및 로그인"])
 
 @app.get("/")
 async def root(request: Request):
@@ -21,62 +21,12 @@ async def root(request: Request):
     ]
     return url_list
 
-
-@app.get("/friends")
-def route_get_friends():
-    return get_friends()
+# error handling
 
 
-@app.get("/lol_account")
-def route_get_lol_account(user_id: str):
-
-    return get_lol_account(user_id=user_id)
 
 
-@app.get("/profiles")
-def route_get_profiles(lol_name: str):
-    return get_all_profiles(lol_name=lol_name)
 
 
-@app.get("/champions")
-def route_get_champions():
-    return get_all_champions()
 
 
-@app.get("/get_user_info")
-def route_get_user_info(user_id: str):
-    return get_user_info(user_id=user_id)
-
-
-@app.get("/email_auth")
-def route_email_auth(email: str):
-    return email_auth(email=email)
-
-
-@app.post("/register", summary="회원가입", description="회원가입 정보 post")
-def route_register(argument: userArgument):
-    return register(jsonable_encoder(argument))
-
-
-@app.get("/sign_in")
-async def route_sign_in(request: Request):
-    email = request.query_params["email"]
-    password = request.query_params["password"]
-    return await sign_in(email=email, password=password)
-
-
-@app.get("/kakao_auth")
-def route_get_kakao_auth():
-    return get_kakao_auth()
-
-
-@app.get("/callback")
-# 사람들의 말을 들어야하는 이유가 있으며 사람듣ㄹ의 말을 들어야하는 이유가 잇다.
-def route_get_token(request: Request):
-    code = request.query_params["code"]
-    return get_kakao_token(code)
-
-
-# @app.get("/login")
-# def route_login():
-#     return
