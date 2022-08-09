@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request
-from route import champions, friends, profiles, profiles, users
+from route import champions, friends, profiles, profiles, users, riot
 from dotenv.main import load_dotenv
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
@@ -14,6 +14,7 @@ app.include_router(champions.router, prefix="/champions", tags=["챔피언"])
 app.include_router(friends.router, prefix="/friends", tags=["친구"])
 app.include_router(profiles.router, prefix="/profiles", tags=["프로필"])
 app.include_router(users.router, prefix="/users", tags=["유저 등록 및 로그인"])
+app.include_router(riot.router, prefix="/riot", tags=["라이엇 API 테스트"])
 
 @app.get("/")
 async def root(request: Request):
