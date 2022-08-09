@@ -50,3 +50,22 @@ def get_recent_games(puuid: str, queue_type: str):
         response = requests.get(url).json()
     
     return result
+
+def get_match_info(matchid: str, puuid:str):
+    url = 'https://asia.api.riotgames.com/lol/match/v5/matches/' + matchid +'?api_key=' + api_key
+    response = requests.get(url).json()
+    match_info = response ['info']['participants']
+    result =[]
+
+
+    for r in match_info:
+        if(r['puuid']==puuid):
+            individualPosition=r['individualPosition']
+            championName=r['championName']
+            kills=r['kills']
+            deaths=r['deaths']
+            assists=r['assists']
+            win=r['win']
+            result.append([individualPosition,championName,kills,deaths,assists,win])
+
+    return result

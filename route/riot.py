@@ -18,3 +18,7 @@ def route_get_user_info(id: str):
 def route_get_recent_games(puuid: str, queue_type: str):
    #  queue_type 솔랭 = 420 / 자랭 = 440
     return get_recent_games(puuid = puuid, queue_type=queue_type)
+    
+@router.get("/match_info")
+def route_get_match_info(matchid: str, puuid: str):
+    return get_match_info(matchid=matchid, puuid=puuid)
