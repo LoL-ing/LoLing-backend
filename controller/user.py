@@ -1,10 +1,15 @@
-from db_connection.rds import get_rds_db_connection, exec_query, exec_insert_query
+from db_connection import rds
+from db_connection.rds import close_rds_db_connection, get_rds_db_connection, exec_query, exec_insert_query
 from dotenv.main import load_dotenv
 import os
 import bcrypt
 import jwt
 from model.user.request import UserRegisterArgument
 from starlette.responses import JSONResponse
+from model import ApiResponseCode
+from mysql.connector.errors import Error as mysqlError
+from exception import LOLINGDBRequestFailException
+from starlette.status import *
 from query import user as query
 
 load_dotenv()
@@ -13,6 +18,9 @@ algorithm = os.environ.get("ALGORITHM")
 
 
 def get_user_info(user_id):
+    """
+    유저 정보 조회
+    """
     rds_conn = get_rds_db_connection()
     user_data = {"user_id": user_id}
 
@@ -22,12 +30,10 @@ def get_user_info(user_id):
 
     return user_response
 
-
-# def insert_user_info(email, password):
-#     rd
-
-
 async def sign_in(email: str, password: str):
+    """"
+    로그인
+    """
     is_exist = get_user_info(email)
     if is_exist:
         is_verified = bcrypt.checkpw(
@@ -73,23 +79,45 @@ async def sign_in(email: str, password: str):
 
 
 def register(argument: UserRegisterArgument):
-    rds_conn = get_rds_db_connection()
-    user_data = {"email": argument.get("email"), "password": argument.get("password")}
+    """
+    회원가입
+    """
 
-    print("############### user_info 생성 ###############")
-    exec_insert_query(rds_conn, query.INSERT_USER_REGISER, input_params=user_data)
+    # 비밀번호 확인
+    if argument.password != argument.password_confirm:
+        return HTTP_400_BAD_REQUEST, {"code": ApiResponseCode.INVALID_PARAMETER, "message": "비밀번호와 비밀번호 확인 값이 일치하지 않습니다."}
 
-    return JSONResponse(status_code=200, content=dict(msg="회원가입 성공"))
+    try:
+        rds_conn = get_rds_db_connection()
+        user_data = {"email": argument.get("email"), "password": argument.get("password")}
+
+        print("############### user_info 생성 ###############")
+        exec_insert_query(rds_conn, query.INSERT_USER_REGISER, input_params=user_data)
+
+    except mysqlError as mysql_error:
+        rds_conn.rollback()
+        raise LOLINGDBRequestFailException(mysql_error)
+    
+    except Exception:
+        rds_conn.rollback()
+        raise
+
+    finally:
+        close_rds_db_connection(rds_conn)
+
+    return HTTP_200_OK, {"code": ApiResponseCode.OK, "message": "회원가입 완료"}
 
 
 # 미지의 길...이메일 본인인증......
 def email_auth(email):
-    # 이미 존재하는 회원인지 확인
+    """
+    email 중복 확인
+    """
     is_exist = get_user_info(email)
     if is_exist:
-        return JSONResponse(
-            status_code=400, content=dict(msg="동일한 이메일로 가입한 회원이 존재합니다.")
-        )
+        return HTTP_409_CONFLICT, {"code": ApiResponseCode.DUPLICATE, "message": "동일한 이메일로 가입한 회원이 존재합니다."}
+        
+    return HTTP_200_OK, {"code": ApiResponseCode.OK, "message": "이메일 중복 확인 완료"}    
     # 없는 회원이면 인증 이메일 발송
     # else:
 
