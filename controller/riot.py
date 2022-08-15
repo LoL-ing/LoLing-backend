@@ -11,6 +11,7 @@ from dotenv.main import load_dotenv
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.chrome.options import Options
 
 from datetime import datetime
 import time
@@ -125,7 +126,14 @@ def get_login(id: str, pwd: str, user_os: str):
     # webdirver옵션에서 headless기능을 사용하겠다 라는 내용
     webdriver_options = webdriver.ChromeOptions()
     webdriver_options.add_argument("headless")
-
+    options = Options()
+    if user_os == "linux":
+        options.binary_location = "/".join(
+            [
+                os.path.dirname(os.path.realpath(__file__)),
+                "google-chrome-stable_current_amd64.deb",
+            ]
+        )
     driver_path = (
         "/".join([os.path.dirname(os.path.realpath(__file__)), "chromedriver"])
         + "_"
@@ -133,8 +141,7 @@ def get_login(id: str, pwd: str, user_os: str):
     )
 
     driver = webdriver.Chrome(
-        executable_path=driver_path,
-        options=webdriver_options,
+        executable_path=driver_path, options=webdriver_options, chrome_options=options
     )
     url = "https://auth.riotgames.com/login#client_id=riot-developer-portal&redirect_uri=https%3A%2F%2Fdeveloper.riotgames.com%2Foauth2-callback&response_type=code&scope=openid%20email%20summoner&ui_locales=en"
 
