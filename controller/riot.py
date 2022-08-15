@@ -1,11 +1,17 @@
 import os
-import queue
+
 import requests
 from starlette.responses import JSONResponse
-import logging
+
 from urllib import parse
+
 from const.urls import RIOT_API_URLS
 from dotenv.main import load_dotenv
+
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+
 from datetime import datetime
 import time
 
@@ -49,8 +55,8 @@ def get_user_info(id: str):
     return riot_user_info_response[0]
 
 
+# 420 : 솔로랭크 440 : 자유랭크
 def get_recent_games(puuid: str, queue_type: str):
-
     start = 0
     count = 100
 
@@ -113,3 +119,39 @@ def get_match_info(matchid: str, puuid: str):
             )
 
     return result
+
+
+def get_login(id: str, pwd: str, user_os: str):
+    # webdirver옵션에서 headless기능을 사용하겠다 라는 내용
+    webdriver_options = webdriver.ChromeOptions()
+    webdriver_options.add_argument("headless")
+
+    driver_path = (
+        "/".join([os.path.dirname(os.path.realpath(__file__)), "chromedriver"])
+        + "_"
+        + user_os
+    )
+
+    driver = webdriver.Chrome(
+        executable_path=driver_path,
+        options=webdriver_options,
+    )
+    url = "https://auth.riotgames.com/login#client_id=riot-developer-portal&redirect_uri=https%3A%2F%2Fdeveloper.riotgames.com%2Foauth2-callback&response_type=code&scope=openid%20email%20summoner&ui_locales=en"
+
+    driver.get(url)
+
+    time.sleep(1)
+
+    driver.find_element(By.NAME, "username").send_keys(id)
+    driver.find_element(By.NAME, "password").send_keys(pwd)
+    driver.find_element(By.NAME, "password").send_keys(Keys.ENTER)
+
+    time.sleep(5)
+
+    current_url = driver.current_url
+    driver.quit()
+
+    if current_url == "https://developer.riotgames.com/":
+        return JSONResponse(status_code=200, content=dict(msg="셀레니움 로그인 성공"))
+    else:
+        return JSONResponse(status_code=404, content=dict(msg="셀레니움 로그인 실패"))
