@@ -123,8 +123,8 @@ def get_match_info(matchid: str, puuid: str):
     return result
 
 
-def get_login(id: str, pwd: str, user_os: str):
-    user_os = ""
+def get_login(id: str, pwd: str):
+    user_os = "linux"
     current_os = platform.platform()
 
     if 'mac' in current_os:
