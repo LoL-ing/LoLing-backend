@@ -134,28 +134,31 @@ def get_login(id: str, pwd: str):
     elif 'window' in current_os or 'Window' in current_os:
         user_os = 'window'
 
-    # webdirver옵션에서 headless기능을 사용하겠다 라는 내용
     webdriver_options = webdriver.ChromeOptions()
     webdriver_options.add_argument("headless")
+    
+    # webdirver옵션에서 headless기능을 사용하겠다 라는 내용
     options = Options()
+    options.add_argument('--headless')
+    options.add_argument('--no-sandbox')
+
     if user_os == "linux":
         options.binary_location = "/usr/bin/google-chrome"
-        options.add_argument('--headless')
-        options.add_argument('--no-sandbox')
         options.add_argument("--single-process")
         options.add_argument("--disable-dev-shm-usage")
+    
     driver_path = (
         "/".join([os.path.dirname(os.path.realpath(__file__)), "chromedriver"])
         + "_"
         + user_os
+        + (".exe" if user_os == 'window' else '') 
     )
 
     driver = webdriver.Chrome(
         executable_path=driver_path, options=webdriver_options, chrome_options=options
     )
-    url = "https://auth.riotgames.com/login#client_id=riot-developer-portal&redirect_uri=https%3A%2F%2Fdeveloper.riotgames.com%2Foauth2-callback&response_type=code&scope=openid%20email%20summoner&ui_locales=en"
 
-    driver.get(url)
+    driver.get(RIOT_API_URLS["DEV_LOGIN_PAGE"])
 
     time.sleep(1)
 
