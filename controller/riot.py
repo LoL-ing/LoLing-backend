@@ -128,12 +128,7 @@ def get_login(id: str, pwd: str, user_os: str):
     webdriver_options.add_argument("headless")
     options = Options()
     if user_os == "linux":
-        options.binary_location = "/".join(
-            [
-                os.path.dirname(os.path.realpath(__file__)),
-                "google-chrome-stable_current_amd64.deb",
-            ]
-        )
+        options.binary_location = "/usr/bin/google-chrome"
     driver_path = (
         "/".join([os.path.dirname(os.path.realpath(__file__)), "chromedriver"])
         + "_"
