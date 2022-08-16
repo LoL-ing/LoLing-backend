@@ -152,7 +152,7 @@ def get_login(id: str, pwd: str, user_os: str):
     driver.find_element(By.NAME, "password").send_keys(pwd)
     driver.find_element(By.NAME, "password").send_keys(Keys.ENTER)
 
-    time.sleep(5)
+    time.sleep(3)
 
     current_url = driver.current_url
     driver.quit()
