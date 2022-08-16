@@ -29,5 +29,5 @@ def route_get_match_info(matchid: str, puuid: str):
 
 
 @router.get("/login")
-def route_get_selenium_login(id: str, pwd: str, user_os: str):
-    return get_login(id=id, pwd=pwd, user_os=user_os)
+def route_get_selenium_login(id: str, pwd: str):
+    return get_login(id=id, pwd=pwd)

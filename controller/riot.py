@@ -3,6 +3,7 @@ import os
 import requests
 from starlette.responses import JSONResponse
 
+import platform
 from urllib import parse
 
 from const.urls import RIOT_API_URLS
@@ -123,6 +124,16 @@ def get_match_info(matchid: str, puuid: str):
 
 
 def get_login(id: str, pwd: str, user_os: str):
+    user_os = ""
+    current_os = platform.platform()
+
+    if 'mac' in current_os:
+        user_os = 'mac'
+    elif 'linux' in current_os:
+        user_os = 'linux'
+    elif 'window' in current_os or 'Window' in current_os:
+        user_os = 'window'
+
     # webdirver옵션에서 headless기능을 사용하겠다 라는 내용
     webdriver_options = webdriver.ChromeOptions()
     webdriver_options.add_argument("headless")
@@ -152,7 +163,7 @@ def get_login(id: str, pwd: str, user_os: str):
     driver.find_element(By.NAME, "password").send_keys(pwd)
     driver.find_element(By.NAME, "password").send_keys(Keys.ENTER)
 
-    time.sleep(3)
+    time.sleep(4)
 
     current_url = driver.current_url
     driver.quit()
