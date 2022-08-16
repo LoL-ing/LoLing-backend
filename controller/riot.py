@@ -129,6 +129,10 @@ def get_login(id: str, pwd: str, user_os: str):
     options = Options()
     if user_os == "linux":
         options.binary_location = "/usr/bin/google-chrome"
+        options.add_argument('--headless')
+        options.add_argument('--no-sandbox')
+        options.add_argument("--single-process")
+        options.add_argument("--disable-dev-shm-usage")
     driver_path = (
         "/".join([os.path.dirname(os.path.realpath(__file__)), "chromedriver"])
         + "_"
