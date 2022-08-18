@@ -7,6 +7,11 @@ from controller.riot import *
 router = APIRouter()
 
 
+@router.post("/lol_info")
+def route_post_lol_info(signin_id: str, lol_name: str):
+    return post_lol_info(signin_id, lol_name)
+
+
 @router.get("/user_id")
 def route_get_user_id(summoner_name: str):
     return get_user_id(summoner_name=summoner_name)
