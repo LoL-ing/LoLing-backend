@@ -251,7 +251,7 @@ def get_match_info_ods():
 
     ret = []
 
-    for data in puuid_match_ids:
+    for idx, data in enumerate(puuid_match_ids):
         puuid, match_id = data.values()
 
         url = "/".join([RIOT_API_URLS["GET_MATCH_INFO"], match_id])
@@ -267,6 +267,8 @@ def get_match_info_ods():
 
         ret.append(response)
 
+        if idx > 30:
+            break
     if not ret:
         return {"status_code": HTTP_404_NOT_FOUND, "message": "API 요청 실패"}
 
