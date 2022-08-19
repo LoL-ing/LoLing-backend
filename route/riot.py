@@ -7,6 +7,11 @@ from controller.riot import *
 router = APIRouter()
 
 
+@router.post("/lol_info")
+def route_post_lol_info(signin_id: str, lol_name: str):
+    return post_lol_info(signin_id, lol_name)
+
+
 @router.get("/user_id")
 def route_get_user_id(summoner_name: str):
     return get_user_id(summoner_name=summoner_name)
@@ -23,9 +28,19 @@ def route_get_recent_games(puuid: str, queue_type: str):
     return get_recent_games(puuid=puuid, queue_type=queue_type)
 
 
-@router.get("/match_info")
-def route_get_match_info(matchid: str, puuid: str):
-    return get_match_info(matchid=matchid, puuid=puuid)
+@router.get("/match_info/by-puuid")
+def route_get_match_info(match_id: str, puuid: str):
+    return get_match_info_by_user(match_id=match_id, puuid=puuid)
+
+
+@router.get("/match-info")
+def route_get_match_info(match_id: str):
+    return get_match_info(match_id=match_id)
+
+
+@router.get("/match-info/ods")
+def route_get_match_info():
+    return get_match_info_ods()
 
 
 @router.get("/login")

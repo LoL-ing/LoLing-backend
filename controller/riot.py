@@ -1,7 +1,9 @@
+import json
 import os
 
 import requests
 from starlette.responses import JSONResponse
+from starlette.status import *
 
 import platform
 from urllib import parse
@@ -17,6 +19,23 @@ from selenium.webdriver.chrome.options import Options
 from datetime import datetime
 import time
 
+from db_connection.rds import (
+    exec_insert_query,
+    exec_multiple_queries,
+    exec_query,
+    get_rds_db_connection,
+)
+from query.riot import (
+    DELETE_LOL_ACCOUNT,
+    INSERT_LOL_ACCOUNT,
+    INSERT_MATCH_INFO_ODS,
+    INSERT_USER_LOL_ACCOUNT_MAP,
+    DELETE_USER_LOL_ACCOUNT_MAP,
+    DELETE_USERS_MATCH_HISTORY,
+    INSERT_USERS_MATCH_HISTORY,
+    SELECT_MATCH_ID_INFO_N,
+)
+
 load_dotenv()
 api_key = os.environ.get("RIOT_API_KEY")
 
@@ -25,6 +44,82 @@ season_start_date = str(
         datetime.strptime("2022-01-07 14:00:00", "%Y-%m-%d %H:%M:%S").timetuple()
     )
 ).split(".")[0]
+
+global_rds_conn = get_rds_db_connection
+
+
+def post_lol_info(signin_id: str, lol_name: str):
+    global global_rds_conn
+
+    # user 정보 DB INSERT
+    # user_info 넣을 때, lol_name 만 insert 해두고 나머지를 update 할 지.. update 로 할 지? lock 때문에
+    user_id_info = get_user_id(lol_name)
+    user_info = get_user_info(user_id_info.get("id"))
+
+    exec_query(
+        global_rds_conn,
+        DELETE_LOL_ACCOUNT,
+        select_flag=False,
+        input_params={"lol_name": lol_name},
+    )
+
+    exec_insert_query(
+        global_rds_conn,
+        INSERT_LOL_ACCOUNT,
+        input_params={
+            "lol_name": lol_name,
+            "user_id": user_id_info.get("id"),
+            "puuid": user_id_info.get("puuid"),
+            "wins": user_info.get("wins"),
+            "losses": user_info.get("losses"),
+            "tier": " ".join([user_info.get("tier"), user_info.get("rank")]),
+        },
+    )
+
+    exec_query(
+        global_rds_conn,
+        DELETE_USER_LOL_ACCOUNT_MAP,
+        select_flag=False,
+        input_params={
+            "signin_id": signin_id,
+            "lol_name": lol_name,
+        },
+    )
+
+    exec_insert_query(
+        global_rds_conn,
+        INSERT_USER_LOL_ACCOUNT_MAP,
+        input_params={
+            "signin_id": signin_id,
+            "lol_name": lol_name,
+        },
+    )
+
+    exec_query(
+        global_rds_conn,
+        DELETE_USERS_MATCH_HISTORY,
+        select_flag=False,
+        input_params={
+            "puuid": user_id_info.get("puuid"),
+        },
+    )
+
+    for queue_type in ["420", "440"]:
+        match_ids = get_recent_games(user_id_info.get("puuid"), queue_type=queue_type)
+
+        exec_multiple_queries(
+            global_rds_conn,
+            INSERT_USERS_MATCH_HISTORY,
+            input_params=[
+                {
+                    "puuid": user_id_info.get("puuid"),
+                    "match_type": queue_type,
+                    "match_id": match_id,
+                }
+                for match_id in match_ids
+            ],
+        )
+    return JSONResponse(status_code=200, content=dict(msg="LOL 계정 정보 DB INSERT 성공"))
 
 
 def get_user_id(summoner_name: str):
@@ -83,7 +178,11 @@ def get_recent_games(puuid: str, queue_type: str):
 
     result = []
 
-    while response:
+    # 요청 횟수 초과 조건
+    while response and not (
+        isinstance(response, dict)
+        and response.get("status", {}).get("status_code") == 429
+    ):
         result.extend(response)
 
         start += count
@@ -102,60 +201,116 @@ def get_recent_games(puuid: str, queue_type: str):
     return result
 
 
-def get_match_info(matchid: str, puuid: str):
-    url = RIOT_API_URLS["GET_MATCH_INFO"] + matchid + "?api_key=" + api_key
-    response = requests.get(url).json()
-    match_info = response["info"]["participants"]
-    result = []
+def get_match_info_by_user(match_id: str, puuid: str):
+    url = "/".join([RIOT_API_URLS["GET_MATCH_INFO"], match_id])
+    params = {"api_key": api_key}
+    response = requests.get(url, params=params).json()
 
-    for r in match_info:
-        if r["puuid"] == puuid:
-            individualPosition = r["individualPosition"]
-            championName = r["championName"]
-            kills = r["kills"]
-            deaths = r["deaths"]
-            assists = r["assists"]
-            win = r["win"]
-            result.append(
-                [individualPosition, championName, kills, deaths, assists, win]
-            )
+    match_info = response.get("info", {})
+    match_participants_info = match_info.get("participants")
+    participants = response.get("metadata", {}).get("participants")
 
-    return result
+    result = list(
+        filter(lambda info: info.get("puuid") == puuid, match_participants_info)
+    )
+
+    if not result and len(result) < 1:
+        return {"status_code": HTTP_404_NOT_FOUND, "message": "일치하는 항목 없음"}
+
+    result = result[0]
+
+    return {
+        "puuid": puuid,
+        "match_id": match_id,
+        "match_type": match_info.get("queueId"),
+        "line_name": result.get("individualPosition"),
+        "champ_name": result.get("championName"),
+        "kills": result.get("kills"),
+        "deaths": result.get("deaths"),
+        "assists": result.get("assists"),
+        "win": result.get("win"),
+        "participants": participants,
+    }
+
+
+def get_match_info(match_id: str):
+    url = "/".join([RIOT_API_URLS["GET_MATCH_INFO"], match_id])
+    params = {"api_key": api_key}
+    response = requests.get(url, params=params).json()
+
+    return response
+
+
+def get_match_info_ods():
+    global global_rds_conn
+
+    puuid_match_ids = exec_query(global_rds_conn, SELECT_MATCH_ID_INFO_N)
+
+    if not puuid_match_ids or len(puuid_match_ids) < 1:
+        return {"status_code": HTTP_404_NOT_FOUND, "message": "모든 매치 정보 수집 했음"}
+
+    ret = []
+
+    for data in puuid_match_ids:
+        puuid, match_id = data.values()
+
+        url = "/".join([RIOT_API_URLS["GET_MATCH_INFO"], match_id])
+        params = {"api_key": api_key}
+        response = requests.get(url, params=params).json()
+        print(match_id)
+        if response.get("status", {}).get("status_code") == 429:
+            print("요청 횟수 초과")
+            break
+        elif response.get("status", {}).get("status_code") == 403:
+            print("Forbidden")
+            break
+
+        ret.append(response)
+
+    if not ret:
+        return {"status_code": HTTP_404_NOT_FOUND, "message": "API 요청 실패"}
+
+    exec_multiple_queries(global_rds_conn, INSERT_MATCH_INFO_ODS, json.dumps(ret))
+
+    return ret
 
 
 def get_login(id: str, pwd: str):
     user_os = "linux"
     current_os = platform.platform()
 
-    if 'mac' in current_os:
-        user_os = 'mac'
-    elif 'linux' in current_os:
-        user_os = 'linux'
-    elif 'window' in current_os or 'Window' in current_os:
-        user_os = 'window'
+    if "mac" in current_os:
+        user_os = "mac"
+    elif "linux" in current_os:
+        user_os = "linux"
+    elif "window" in current_os or "Window" in current_os:
+        user_os = "window"
 
-    # webdirver옵션에서 headless기능을 사용하겠다 라는 내용
     webdriver_options = webdriver.ChromeOptions()
     webdriver_options.add_argument("headless")
+
+    # webdirver옵션에서 headless기능을 사용하겠다 라는 내용
     options = Options()
+    options.add_argument("--headless")
+    options.add_argument("--no-sandbox")
+
     if user_os == "linux":
         options.binary_location = "/usr/bin/google-chrome"
-        options.add_argument('--headless')
-        options.add_argument('--no-sandbox')
         options.add_argument("--single-process")
         options.add_argument("--disable-dev-shm-usage")
+
     driver_path = (
         "/".join([os.path.dirname(os.path.realpath(__file__)), "chromedriver"])
         + "_"
         + user_os
+        + (".exe" if user_os == "window" else "")
     )
 
     driver = webdriver.Chrome(
         executable_path=driver_path, options=webdriver_options, chrome_options=options
     )
-    url = "https://auth.riotgames.com/login#client_id=riot-developer-portal&redirect_uri=https%3A%2F%2Fdeveloper.riotgames.com%2Foauth2-callback&response_type=code&scope=openid%20email%20summoner&ui_locales=en"
 
-    driver.get(url)
+    driver.get(RIOT_API_URLS["DEV_LOGIN_PAGE"])
 
     time.sleep(1)
 
