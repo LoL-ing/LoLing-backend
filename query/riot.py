@@ -61,3 +61,20 @@ INSERT INTO MATCHES.USERS_MATCH_HISTORY (
 )
 ;
 """
+
+SELECT_MATCH_ID_INFO_N = """
+SELECT puuid, match_id
+  FROM MATCHES.USERS_MATCH_HISTORY
+ WHERE info_yn = 'N';
+"""
+
+INSERT_MATCH_INFO_ODS = """
+INSERT INTO MATCHES.MATCHES_ODS (
+       metadata
+     , info
+) VALUES (
+       %(metadata)s
+     , %(info)s
+) 
+;
+"""

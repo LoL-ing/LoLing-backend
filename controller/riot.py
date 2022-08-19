@@ -28,10 +28,12 @@ from db_connection.rds import (
 from query.riot import (
     DELETE_LOL_ACCOUNT,
     INSERT_LOL_ACCOUNT,
+    INSERT_MATCH_INFO_ODS,
     INSERT_USER_LOL_ACCOUNT_MAP,
     DELETE_USER_LOL_ACCOUNT_MAP,
     DELETE_USERS_MATCH_HISTORY,
     INSERT_USERS_MATCH_HISTORY,
+    SELECT_MATCH_ID_INFO_N,
 )
 
 load_dotenv()
@@ -199,8 +201,8 @@ def get_recent_games(puuid: str, queue_type: str):
     return result
 
 
-def get_match_info(matchid: str, puuid: str):
-    url = "/".join([RIOT_API_URLS["GET_MATCH_INFO"], matchid])
+def get_match_info_by_user(match_id: str, puuid: str):
+    url = "/".join([RIOT_API_URLS["GET_MATCH_INFO"], match_id])
     params = {"api_key": api_key}
     response = requests.get(url, params=params).json()
 
@@ -219,7 +221,7 @@ def get_match_info(matchid: str, puuid: str):
 
     return {
         "puuid": puuid,
-        "match_id": matchid,
+        "match_id": match_id,
         "match_type": match_info.get("queueId"),
         "line_name": result.get("individualPosition"),
         "champ_name": result.get("championName"),
@@ -229,6 +231,48 @@ def get_match_info(matchid: str, puuid: str):
         "win": result.get("win"),
         "participants": participants,
     }
+
+
+def get_match_info(match_id: str):
+    url = "/".join([RIOT_API_URLS["GET_MATCH_INFO"], match_id])
+    params = {"api_key": api_key}
+    response = requests.get(url, params=params).json()
+
+    return response
+
+
+def get_match_info_ods():
+    global global_rds_conn
+
+    puuid_match_ids = exec_query(global_rds_conn, SELECT_MATCH_ID_INFO_N)
+
+    if not puuid_match_ids or len(puuid_match_ids) < 1:
+        return {"status_code": HTTP_404_NOT_FOUND, "message": "모든 매치 정보 수집 했음"}
+
+    ret = []
+
+    for data in puuid_match_ids:
+        puuid, match_id = data.values()
+
+        url = "/".join([RIOT_API_URLS["GET_MATCH_INFO"], match_id])
+        params = {"api_key": api_key}
+        response = requests.get(url, params=params).json()
+        print(match_id)
+        if response.get("status", {}).get("status_code") == 429:
+            print("요청 횟수 초과")
+            break
+        elif response.get("status", {}).get("status_code") == 403:
+            print("Forbidden")
+            break
+
+        ret.append(response)
+
+    if not ret:
+        return {"status_code": HTTP_404_NOT_FOUND, "message": "API 요청 실패"}
+
+    exec_multiple_queries(global_rds_conn, INSERT_MATCH_INFO_ODS, json.dumps(ret))
+
+    return ret
 
 
 def get_login(id: str, pwd: str):
