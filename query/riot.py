@@ -41,20 +41,20 @@ INSERT INTO USERS.USER_LOL_ACCOUNT_MAP (
 """
 
 
-DELETE_USERS_MATCH_HISTORY = """
-DELETE FROM MATCHES.USERS_MATCH_HISTORY
- WHERE puuid = %(puuid)s
+DELETE_USERS_MATCH_MAP = """
+DELETE FROM MATCHES.USERS_MATCH_MAP
+ WHERE lol_name = %(lol_name)s
 ;
 """
 
-INSERT_USERS_MATCH_HISTORY = """
-INSERT INTO MATCHES.USERS_MATCH_HISTORY (
-       puuid
+INSERT_USERS_MATCH_MAP = """
+INSERT INTO MATCHES.USERS_MATCH_MAP (
+       lol_name
      , match_id
      , match_type
-     , info_yn
+     , ods_yn
 ) VALUES (
-       %(puuid)s
+       %(lol_name)s
      , %(match_id)s
      , %(match_type)s
      , 'N'
@@ -62,19 +62,37 @@ INSERT INTO MATCHES.USERS_MATCH_HISTORY (
 ;
 """
 
+UPDATE_USERS_MATCH_ODS_YN = """
+UPDATE MATCHES.USERS_MATCH_MAP
+   SET ods_yn = %(ods_yn)s
+ WHERE 1=1
+"""
+
+UPDATE_USERS_MATCH_ODS_YN_WHERE = """
+   AND match_id in 
+"""
+
+
 SELECT_MATCH_ID_INFO_N = """
-SELECT puuid, match_id
-  FROM MATCHES.USERS_MATCH_HISTORY
- WHERE info_yn = 'N';
+SELECT match_id
+  FROM MATCHES.USERS_MATCH_MAP
+ WHERE lol_name = %(lol_name)s
+   AND ods_yn = 'N';
 """
 
 INSERT_MATCH_INFO_ODS = """
 INSERT INTO MATCHES.MATCHES_ODS (
-       metadata
+       match_id
+     , metadata
      , info
+     , CREATED_DTTM
 ) VALUES (
-       %(metadata)s
+       %(match_id)s
+     , %(metadata)s
      , %(info)s
+     , NOW()
 ) 
+   ON DUPLICATE KEY UPDATE match_id = VALUES(match_id)
+                         , UPDATED_DTTM = NOW()
 ;
 """

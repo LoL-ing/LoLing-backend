@@ -74,7 +74,7 @@ def get_all_profiles(lol_name: str):
     ;
     """
     champ_response = exec_query(rds_conn, champ_query, True, input_params=where_arg)
-
+    print(champ_response)
     line_query = """
     SELECT B.*
          , C.*
@@ -87,10 +87,11 @@ def get_all_profiles(lol_name: str):
      ;
     """
     line_response = exec_query(rds_conn, line_query, True, input_params=where_arg)
+    print(line_response)
 
     # return {"champ": champ_response, "line": line_response}
     sample_data = {
-        "lolingId": champ_response[0].get("lol_name"),
+        "lolingId": lol_name,
         "profileImg": "../assets/images/Nunu.png",
         "line": line_response[0].get("line_name"),
         "mannerTierImg": "../assets/images/diamond.png",

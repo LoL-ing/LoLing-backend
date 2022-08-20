@@ -31,9 +31,11 @@ from query.riot import (
     INSERT_MATCH_INFO_ODS,
     INSERT_USER_LOL_ACCOUNT_MAP,
     DELETE_USER_LOL_ACCOUNT_MAP,
-    DELETE_USERS_MATCH_HISTORY,
-    INSERT_USERS_MATCH_HISTORY,
+    DELETE_USERS_MATCH_MAP,
+    INSERT_USERS_MATCH_MAP,
     SELECT_MATCH_ID_INFO_N,
+    UPDATE_USERS_MATCH_ODS_YN,
+    UPDATE_USERS_MATCH_ODS_YN_WHERE,
 )
 
 load_dotenv()
@@ -97,22 +99,22 @@ def post_lol_info(signin_id: str, lol_name: str):
 
     exec_query(
         global_rds_conn,
-        DELETE_USERS_MATCH_HISTORY,
+        DELETE_USERS_MATCH_MAP,
         select_flag=False,
         input_params={
-            "puuid": user_id_info.get("puuid"),
+            "lol_name": lol_name,
         },
     )
 
     for queue_type in ["420", "440"]:
-        match_ids = get_recent_games(user_id_info.get("puuid"), queue_type=queue_type)
+        match_ids = get_recent_games(lol_name, queue_type=queue_type)
 
         exec_multiple_queries(
             global_rds_conn,
-            INSERT_USERS_MATCH_HISTORY,
+            INSERT_USERS_MATCH_MAP,
             input_params=[
                 {
-                    "puuid": user_id_info.get("puuid"),
+                    "lol_name": lol_name,
                     "match_type": queue_type,
                     "match_id": match_id,
                 }
@@ -122,8 +124,8 @@ def post_lol_info(signin_id: str, lol_name: str):
     return JSONResponse(status_code=200, content=dict(msg="LOL 계정 정보 DB INSERT 성공"))
 
 
-def get_user_id(summoner_name: str):
-    name = parse.quote(summoner_name)
+def get_user_id(lol_name: str):
+    name = parse.quote(lol_name)
     url = "/".join([RIOT_API_URLS["GET_USER_ID"], name])
     params = {"api_key": api_key}
     riot_user_response = requests.get(url, params=params).json()
@@ -153,7 +155,10 @@ def get_user_info(id: str):
 
 
 # 420 : 솔로랭크 440 : 자유랭크
-def get_recent_games(puuid: str, queue_type: str):
+def get_recent_games(lol_name: str, queue_type: str):
+    user_id_data = get_user_id(lol_name)
+    puuid = user_id_data.get("puuid")
+
     start = 0
     count = 100
 
@@ -241,23 +246,23 @@ def get_match_info(match_id: str):
     return response
 
 
-def get_match_info_ods():
+def get_match_info_ods(lol_name: str):
     global global_rds_conn
 
-    puuid_match_ids = exec_query(global_rds_conn, SELECT_MATCH_ID_INFO_N)
+    match_ids = exec_query(
+        global_rds_conn, SELECT_MATCH_ID_INFO_N, input_params={"lol_name": lol_name}
+    )
 
-    if not puuid_match_ids or len(puuid_match_ids) < 1:
+    if not match_ids or len(match_ids) < 1:
         return {"status_code": HTTP_404_NOT_FOUND, "message": "모든 매치 정보 수집 했음"}
 
     ret = []
-
-    for idx, data in enumerate(puuid_match_ids):
-        puuid, match_id = data.values()
+    for idx, data in enumerate(match_ids):
+        match_id = data.get("match_id")
 
         url = "/".join([RIOT_API_URLS["GET_MATCH_INFO"], match_id])
         params = {"api_key": api_key}
         response = requests.get(url, params=params).json()
-        print(match_id)
         if response.get("status", {}).get("status_code") == 429:
             print("요청 횟수 초과")
             break
@@ -265,16 +270,31 @@ def get_match_info_ods():
             print("Forbidden")
             break
 
-        ret.append(response)
-
-        if idx > 30:
+        ret.append(
+            {
+                "match_id": match_id,
+                "metadata": json.dumps(response.get("metadata"), ensure_ascii=False),
+                "info": json.dumps(response.get("info"), ensure_ascii=False),
+            }
+        )
+        if idx > 12:
             break
     if not ret:
         return {"status_code": HTTP_404_NOT_FOUND, "message": "API 요청 실패"}
 
-    exec_multiple_queries(global_rds_conn, INSERT_MATCH_INFO_ODS, json.dumps(ret))
+    exec_multiple_queries(global_rds_conn, INSERT_MATCH_INFO_ODS, ret)
 
-    return ret
+    update_query = (
+        UPDATE_USERS_MATCH_ODS_YN
+        + UPDATE_USERS_MATCH_ODS_YN_WHERE
+        + str(tuple(list(map(lambda data: data.get("match_id"), ret))))
+    ).replace(",)", ")") + ";"
+
+    exec_query(
+        global_rds_conn, update_query, select_flag=False, input_params={"ods_yn": "Y"}
+    )
+
+    return str(tuple(list(map(lambda data: data.get("match_id"), ret))))
 
 
 def get_login(id: str, pwd: str):

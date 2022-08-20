@@ -13,8 +13,8 @@ def route_post_lol_info(signin_id: str, lol_name: str):
 
 
 @router.get("/user_id")
-def route_get_user_id(summoner_name: str):
-    return get_user_id(summoner_name=summoner_name)
+def route_get_user_id(lol_name: str):
+    return get_user_id(lol_name=lol_name)
 
 
 @router.get("/user_info")
@@ -39,8 +39,8 @@ def route_get_match_info(match_id: str):
 
 
 @router.get("/match-info/ods")
-def route_get_match_info():
-    return get_match_info_ods()
+def route_get_match_info(lol_name: str):
+    return get_match_info_ods(lol_name=lol_name)
 
 
 @router.get("/login")
