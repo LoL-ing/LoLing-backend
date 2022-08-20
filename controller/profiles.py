@@ -23,17 +23,17 @@ def get_lol_account(user_id: str, flag=True, user_num=0):
 
     lol_account = exec_query(rds_conn, select_query, True, input_params=where_arg)
 
-    sample_data = [
-        {
-            "lol_name": data.get("lol_name"),
-            "tier": data.get("tier"),
-            "mostChampKDA": json.loads(data.get("champ_kda"))[1],
-            "mostChampWinRate": json.loads(data.get("champ_win_rate"))[1],
-            "mostLineKDA": json.loads(data.get("line_kda"))[1],
-            "mostLineWinRate": json.loads(data.get("line_win_rate"))[1],
-        }
-        for data in lol_account
-    ]
+    if isinstance(lol_account, list):
+        lol_account = lol_account[0]
+    print(lol_account)
+    sample_data = {
+        "lol_name": lol_account.get("lol_name"),
+        "tier": lol_account.get("tier"),
+        "mostChampKDA": json.loads(lol_account.get("champ_kda"))[1],
+        "mostChampWinRate": json.loads(lol_account.get("champ_win_rate"))[1],
+        "mostLineKDA": json.loads(lol_account.get("line_kda"))[1],
+        "mostLineWinRate": json.loads(lol_account.get("line_win_rate"))[1],
+    }
 
     return sample_data
 
