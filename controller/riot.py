@@ -47,7 +47,7 @@ season_start_date = str(
     )
 ).split(".")[0]
 
-global_rds_conn = get_rds_db_connection
+global_rds_conn = get_rds_db_connection()
 
 
 def post_lol_info(signin_id: str, lol_name: str):
