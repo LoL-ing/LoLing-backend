@@ -57,7 +57,6 @@ def post_lol_info(signin_id: str, lol_name: str):
     # user_info 넣을 때, lol_name 만 insert 해두고 나머지를 update 할 지.. update 로 할 지? lock 때문에
     user_id_info = get_user_id(lol_name)
     user_info = get_user_info(user_id_info.get("id"))
-
     exec_query(
         global_rds_conn,
         DELETE_LOL_ACCOUNT,
@@ -77,6 +76,7 @@ def post_lol_info(signin_id: str, lol_name: str):
             "tier": " ".join([user_info.get("tier"), user_info.get("rank")]),
         },
     )
+    print(user_info)
 
     exec_query(
         global_rds_conn,
@@ -141,17 +141,21 @@ def get_user_info(id: str):
     params = {"api_key": api_key}
 
     riot_user_info_response = requests.get(url, params=params).json()
-
+    print(riot_user_info_response)
     if (
         isinstance(riot_user_info_response, dict)
         and riot_user_info_response.get("status", {}).get("status_code") == 400
     ):
         return JSONResponse(status_code=400, content=dict(msg="잘못된 소환사 id"))
 
-    if riot_user_info_response and len(riot_user_info_response) < 1:
+    if not riot_user_info_response and len(riot_user_info_response) < 1:
         return JSONResponse(status_code=404, content=dict(msg="잘못된 소환사 id"))
 
-    return riot_user_info_response[0]
+    return (
+        riot_user_info_response[0]
+        if isinstance(riot_user_info_response, list)
+        else riot_user_info_response
+    )
 
 
 # 420 : 솔로랭크 440 : 자유랭크
@@ -345,7 +349,7 @@ def get_login(id: str, pwd: str):
     current_url = driver.current_url
     driver.quit()
 
-    if current_url == "https://developer.riotgames.com/":
+    if "https://developer.riotgames.com/" in current_url:
         return JSONResponse(status_code=200, content=dict(msg="셀레니움 로그인 성공"))
     else:
         return JSONResponse(status_code=404, content=dict(msg="셀레니움 로그인 실패"))

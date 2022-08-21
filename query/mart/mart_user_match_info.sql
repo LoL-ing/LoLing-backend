@@ -1,9 +1,14 @@
--- 라인별 승률 / kda
-SELECT lol_name
+-- SELECT lol_name
+--      , line_name
+--      , count(*)
+--  FROM (
+ SELECT lol_name
      , line_name
-     , COUNT(line_name) AS 'line_count'
-     , AVG(IF(win, 1, 0)) as line_win_rate
-     , AVG(kills + assists - deaths) as line_kda
+     , champ_name
+     , kills
+     , deaths
+     , assists
+     , win
   FROM (
 SELECT A.summoner_name AS lol_name
      , A.match_id AS match_id
@@ -30,8 +35,6 @@ SELECT A.summoner_name AS lol_name
                        ON b.ROW_NUM < 10
         ) A
  WHERE A.summoner_name = '고려대 김자헌'
-    ) A
- GROUP BY lol_name, line_name
-
+    ) A ) A
+--  GROUP BY lol_name, line_name
 ;
-
