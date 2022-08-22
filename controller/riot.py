@@ -57,6 +57,7 @@ def post_lol_info(signin_id: str, lol_name: str):
     # user_info 넣을 때, lol_name 만 insert 해두고 나머지를 update 할 지.. update 로 할 지? lock 때문에
     user_id_info = get_user_id(lol_name)
     user_info = get_user_info(user_id_info.get("id"))
+
     exec_query(
         global_rds_conn,
         DELETE_LOL_ACCOUNT,
