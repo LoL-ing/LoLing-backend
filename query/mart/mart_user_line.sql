@@ -1,12 +1,12 @@
--- 챔피언별 승률 / kda
+-- 라인별 승률 / kda
 SELECT lol_name
      , line_name
      , COUNT(line_name) AS line_count
      , AVG(IF(win, 1, 0)) as line_win_rate
-     , AVG(kills + assists - deaths) as line_kda
+     , IF(AVG(kills + assists - deaths) > 0, AVG(kills + assists - deaths), 0) as line_kda
   FROM MATCHES.USERS_MATCH_HISTORY A
- WHERE A.lol_name = '꼽 죽'
+ WHERE A.lol_name = '고려대 김자헌'
  GROUP BY lol_name, line_name
  ORDER BY line_count desc
- limit 3
+ -- limit 3
 ;
