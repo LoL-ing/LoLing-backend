@@ -2,6 +2,12 @@ from db_connection.mongo import get_db_connection
 from db_connection.rds import get_rds_db_connection, exec_query
 import json
 
+from query.profiles import (
+    SELECT_LOL_ACCOUNT,
+    SELECT_USERS_CHAMP_STAT,
+    SELECT_USERS_LINE_STAT,
+)
+
 
 def get_lol_account(user_id: str, flag=True, user_num=0):
     rds_conn = get_rds_db_connection()
@@ -116,3 +122,45 @@ def get_all_profiles(lol_name: str):
     }
 
     return sample_data
+
+
+def get_profile(lol_name: str):
+    # LOL_ACCOUNT, MART_BEST_USER_LINE, MART_BEST_USER_CHAMP 테이블 받아오기
+    rds_conn = get_rds_db_connection()
+    where_arg = {"lol_name": lol_name}
+
+    lol_account = exec_query(rds_conn, SELECT_LOL_ACCOUNT, input_params=where_arg)
+    user_line_stat = exec_query(
+        rds_conn, SELECT_USERS_LINE_STAT, input_params=where_arg
+    )
+    user_champ_stat = exec_query(
+        rds_conn, SELECT_USERS_CHAMP_STAT, input_params=where_arg
+    )
+
+    champ_info = list(
+        map(
+            lambda row: {
+                "QUEUE_TYPE": row.get("QUEUE_TYPE"),
+                "CHAMP_NAME": row.get("CHAMP_NAME"),
+                "CHAMP_COUNT": row.get("CHAMP_COUNT"),
+                "CHAMP_WIN_RATE": row.get("CHAMP_WIN_RATE"),
+                "CHAMP_KDA": row.get("CHAMP_KDA"),
+            },
+            user_champ_stat,
+        )
+    )
+
+    line_info = list(
+        map(
+            lambda row: {
+                "QUEUE_TYPE": row.get("QUEUE_TYPE"),
+                "LINE_NAME": row.get("LINE_NAME"),
+                "LINE_COUNT": row.get("LINE_COUNT"),
+                "LINE_WIN_RATE": row.get("LINE_WIN_RATE"),
+                "LINE_KDA": row.get("LINE_KDA"),
+            },
+            user_line_stat,
+        )
+    )
+
+    return {**lol_account[0], "champ_info": champ_info, "line_info": line_info}

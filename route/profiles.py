@@ -16,3 +16,8 @@ def route_get_lol_account(user_id: str):
 @router.get("/profiles")
 def route_get_profiles(lol_name: str):
     return get_all_profiles(lol_name=lol_name)
+
+
+@router.get("/")
+def route_get_profile(lol_name: str):
+    return get_profile(lol_name)
