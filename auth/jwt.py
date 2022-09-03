@@ -1,7 +1,3 @@
-from exception import (
-    AuthHeaderNotIncludedException,
-    InvalidUserIdException,
-)
 from fastapi import Depends, Header
 from dotenv.main import load_dotenv
 import jwt
@@ -15,7 +11,7 @@ algorithm = os.environ.get("ALGORITHM")
 def auth_required(Authorization: str = Header(None, title="JWT")) -> str:
     try:
         if not Authorization:
-            raise AuthHeaderNotIncludedException
+            raise Exception
 
         token = Authorization[7:]
         decoded_token = jwt.decode(token, secret_key, algorithms=algorithm)
@@ -23,4 +19,4 @@ def auth_required(Authorization: str = Header(None, title="JWT")) -> str:
         return decoded_token.get("identity")
 
     except (IndexError, jwt.PyJWTError):
-        raise InvalidUserIdException
+        raise Exception
