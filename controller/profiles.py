@@ -1,4 +1,3 @@
-from auth.jwt import auth_required
 from db_connection.mongo import get_db_connection
 from db_connection.rds import get_rds_db_connection, exec_query
 from fastapi import APIRouter, Depends

@@ -1,3 +1,4 @@
+from auth.jwt import auth_required
 from fastapi import APIRouter, Depends, Path, Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
