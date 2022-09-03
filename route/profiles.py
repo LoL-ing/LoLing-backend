@@ -19,5 +19,5 @@ def route_get_profiles(lol_name: str):
 
 
 @router.get("/")
-def route_get_profile(lol_name: str):
-    return get_profile(lol_name)
+def route_get_profile():
+    return get_profile()
