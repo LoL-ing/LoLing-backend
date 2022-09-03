@@ -1,8 +1,6 @@
-from db_connection import exec_fetch_query
 from exception import (
     AuthHeaderNotIncludedException,
     InvalidUserIdException,
-    UnpaidException,
 )
 from fastapi import Depends, Header
 from dotenv.main import load_dotenv
