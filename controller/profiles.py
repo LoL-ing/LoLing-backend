@@ -1,5 +1,7 @@
+from auth.jwt import auth_required
 from db_connection.mongo import get_db_connection
 from db_connection.rds import get_rds_db_connection, exec_query
+from fastapi import APIRouter, Depends
 import json
 
 from query.profiles import (
@@ -124,7 +126,10 @@ def get_all_profiles(lol_name: str):
     return sample_data
 
 
-def get_profile(lol_name: str):
+def get_profile(user_info: dict = Depends(auth_required)):
+    print("user_info".center("100", "-"))
+    print(user_info)
+    lol_name = user_info.get("lol_name", "")
     # LOL_ACCOUNT, MART_BEST_USER_LINE, MART_BEST_USER_CHAMP 테이블 받아오기
     rds_conn = get_rds_db_connection()
     where_arg = {"lol_name": lol_name}
