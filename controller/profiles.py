@@ -127,7 +127,7 @@ def get_all_profiles(lol_name: str):
 
 
 def get_profile(user_info: dict = Depends(auth_required)):
-    print("user_info".center("100", "-"))
+    print("user_info".center(100, "-"))
     print(user_info)
     lol_name = user_info.get("lol_name", "")
     # LOL_ACCOUNT, MART_BEST_USER_LINE, MART_BEST_USER_CHAMP 테이블 받아오기
