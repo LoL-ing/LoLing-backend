@@ -18,7 +18,7 @@ def route_get_profiles(lol_name: str):
     return get_all_profiles(lol_name=lol_name)
 
 
-@router.get("/")
+@router.get("")
 def route_get_profile(user_info: dict = Depends(auth_required)):
     lol_name = user_info.get("lol_name")
     return get_profile(lol_name=lol_name)
