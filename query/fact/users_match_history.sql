@@ -25,3 +25,4 @@ SELECT A.summoner_name AS lol_name
         ) A
 ;
 
+
