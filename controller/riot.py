@@ -77,7 +77,6 @@ def post_lol_info(signin_id: str, lol_name: str):
             "tier": " ".join([user_info.get("tier"), user_info.get("rank")]),
         },
     )
-    print(user_info)
 
     exec_query(
         global_rds_conn,
@@ -142,7 +141,6 @@ def get_user_info(id: str):
     params = {"api_key": api_key}
 
     riot_user_info_response = requests.get(url, params=params).json()
-    print(riot_user_info_response)
     if (
         isinstance(riot_user_info_response, dict)
         and riot_user_info_response.get("status", {}).get("status_code") == 400

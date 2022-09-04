@@ -31,7 +31,7 @@ GET_USER_LOL_ACCOUNT = """
 SELECT B.lol_name as lol_name
   FROM USERS.USER A
   LEFT OUTER JOIN USERS.USER_LOL_ACCOUNT_MAP B
-    ON A.SIGNIN_ID = B.SIGNIN_ID
- WHERE A.SIGNIN_ID = %(email)s
+    ON A.signin_id = B.signin_id
+ WHERE A.signin_id = %(email)s
 ;
 """

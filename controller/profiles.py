@@ -32,7 +32,6 @@ def get_lol_account(user_id: str, flag=True, user_num=0):
 
     if isinstance(lol_account, list):
         lol_account = lol_account[0]
-    print(lol_account)
     sample_data = {
         "lol_name": lol_account.get("lol_name"),
         "tier": lol_account.get("tier"),
@@ -81,7 +80,6 @@ def get_all_profiles(lol_name: str):
     ;
     """
     champ_response = exec_query(rds_conn, champ_query, True, input_params=where_arg)
-    print(champ_response)
     line_query = """
     SELECT B.*
          , C.*
@@ -94,7 +92,6 @@ def get_all_profiles(lol_name: str):
      ;
     """
     line_response = exec_query(rds_conn, line_query, True, input_params=where_arg)
-    print(line_response)
 
     # return {"champ": champ_response, "line": line_response}
     sample_data = {
@@ -126,7 +123,6 @@ def get_all_profiles(lol_name: str):
 
 
 def get_profile(lol_name: str):
-    print("get_profile".center(100, "-"))
     # LOL_ACCOUNT, MART_BEST_USER_LINE, MART_BEST_USER_CHAMP 테이블 받아오기
     rds_conn = get_rds_db_connection()
     where_arg = {"lol_name": lol_name}

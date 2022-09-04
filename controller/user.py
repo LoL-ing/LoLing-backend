@@ -1,5 +1,10 @@
 from db_connection import rds
-from db_connection.rds import close_rds_db_connection, get_rds_db_connection, exec_query, exec_insert_query
+from db_connection.rds import (
+    close_rds_db_connection,
+    get_rds_db_connection,
+    exec_query,
+    exec_insert_query,
+)
 from dotenv.main import load_dotenv
 import os
 import bcrypt
@@ -30,8 +35,9 @@ def get_user_info(user_id):
 
     return user_response
 
+
 async def sign_in(email: str, password: str):
-    """"
+    """ "
     로그인
     """
     is_exist = get_user_info(email)
@@ -61,7 +67,7 @@ async def sign_in(email: str, password: str):
                 )
 
             token = jwt.encode(
-                {"email": email, "lol_name": lol_names[0].get("LOL_NAME", "")},
+                {"email": email, "lol_name": lol_names[0].get("lol_name", "")},
                 secret_key,
                 algorithm,
             )
@@ -85,11 +91,17 @@ def register(argument: UserRegisterArgument):
 
     # 비밀번호 확인
     if argument.password != argument.password_confirm:
-        return HTTP_400_BAD_REQUEST, {"code": ApiResponseCode.INVALID_PARAMETER, "message": "비밀번호와 비밀번호 확인 값이 일치하지 않습니다."}
+        return HTTP_400_BAD_REQUEST, {
+            "code": ApiResponseCode.INVALID_PARAMETER,
+            "message": "비밀번호와 비밀번호 확인 값이 일치하지 않습니다.",
+        }
 
     try:
         rds_conn = get_rds_db_connection()
-        user_data = {"email": argument.get("email"), "password": argument.get("password")}
+        user_data = {
+            "email": argument.get("email"),
+            "password": argument.get("password"),
+        }
 
         print("############### user_info 생성 ###############")
         exec_insert_query(rds_conn, query.INSERT_USER_REGISER, input_params=user_data)
@@ -97,7 +109,7 @@ def register(argument: UserRegisterArgument):
     except mysqlError as mysql_error:
         rds_conn.rollback()
         raise LOLINGDBRequestFailException(mysql_error)
-    
+
     except Exception:
         rds_conn.rollback()
         raise
@@ -115,9 +127,12 @@ def email_auth(email):
     """
     is_exist = get_user_info(email)
     if is_exist:
-        return HTTP_409_CONFLICT, {"code": ApiResponseCode.DUPLICATE, "message": "동일한 이메일로 가입한 회원이 존재합니다."}
-        
-    return HTTP_200_OK, {"code": ApiResponseCode.OK, "message": "이메일 중복 확인 완료"}    
+        return HTTP_409_CONFLICT, {
+            "code": ApiResponseCode.DUPLICATE,
+            "message": "동일한 이메일로 가입한 회원이 존재합니다.",
+        }
+
+    return HTTP_200_OK, {"code": ApiResponseCode.OK, "message": "이메일 중복 확인 완료"}
     # 없는 회원이면 인증 이메일 발송
     # else:
 
