@@ -85,11 +85,13 @@ INSERT INTO MATCHES.MATCHES_ODS (
        match_id
      , metadata
      , info
+     , fact_yn
      , CREATED_DTTM
 ) VALUES (
        %(match_id)s
      , %(metadata)s
      , %(info)s
+     , 'N'
      , NOW()
 ) 
    ON DUPLICATE KEY UPDATE match_id = VALUES(match_id)

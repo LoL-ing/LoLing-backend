@@ -79,6 +79,10 @@ def route_get_profile(user_info: dict = Depends(auth_required)):
 1. **lol_account 솔랭 자랭 tier 나누기**
 ~~2. 자랭 솔랭 정보 mart table 생성해서 넣어두기 (라인, 챔피언 정보들 넣기)~~
 3. **FACT 쿼리 어디서 돌릴지 정하기**
+   1. ods 에서 fact 돌린건지 아닌지 `fact_yn` 인자 추가하기 
+   -> 쿼리문도 수정해야함
+   - fact 돌린 후 ods 의 `fact_yn` 'Y' 로 바꾸는 update 문 추가하기
+   - fact 돌릴 때, `fact_yn` 이 'N' 인 것만 insert 하기
 4. **정보 갱신 로직 설정하기**
    1. `match_id` 들 받아오기
    2. `match_id` 에 대한 매치 정보 받기 (ODS)
@@ -89,7 +93,7 @@ def route_get_profile(user_info: dict = Depends(auth_required)):
 6. user info api 요청 했을 때, 랭크별로, 아무 게임도 안돌린 사람은 빈값으로 나옴 -> 예외 처리 필요
 7. DB timezone 한국시간으로
 8. api 에서 주는 line 이 none 인 경우
-9. 매칭 할 때 돌릴 수 있는 티어 구분해서 주기 
+9.  매칭 할 때 돌릴 수 있는 티어 구분해서 주기 
 10. 백엔드 라우트, 쿼리 주석달기
 11. DB 컬럼네임 대문자로 바꾸고 백엔드도 수정하기
 12. db connection 더늦기전에 인자 빼기
