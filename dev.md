@@ -67,7 +67,7 @@ def route_get_profile(user_info: dict = Depends(auth_required)):
 ## 고쳐야 할 점
 1. **AsyncStorage** 가 곧 deprecated 됨. 
 
-'@react-native-async-storage/async-storage' instead of 'react-native'. See https://github.com/react-native-async-storage/async-storage
+`'@react-native-async-storage/async-storage' instead of 'react-native'. See https://github.com/react-native-async-storage/async-storage`
 
 로 수정 해야 함.
 
