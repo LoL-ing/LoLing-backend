@@ -35,3 +35,10 @@ SELECT B.lol_name as lol_name
  WHERE A.signin_id = %(email)s
 ;
 """
+
+GET_FRIENDS_LOL_NAME = """
+SELECT friend_lol_name 
+  FROM USERS.LOL_FRIEND_MAP
+ WHERE lol_name = %(lol_name)s
+ ;
+"""

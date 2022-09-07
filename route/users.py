@@ -44,3 +44,7 @@ def route_get_kakao_auth():
 def route_get_token(request: Request):
     code = request.query_params["code"]
     return get_kakao_token(code)
+
+@router.get("/freinds")
+def route_get_friends(lol_name: str):
+    return get_friends(lol_name = lol_name)

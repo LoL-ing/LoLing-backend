@@ -24,7 +24,7 @@ def close_rds_db_connection(conn: mysql.connector.connection.MySQLConnection):
 
 # SELECT / DELETE 문
 
-def exec_query(conn, query_str, select_flag=True, get_insert_id=False, input_params=""):
+def exec_query(conn, query_str, select_flag=True, get_insert_id=False, input_params={}):
     try:
         conn = get_rds_db_connection()
         cursor: mysql.connector.connection.MySQLCursor = conn.cursor(

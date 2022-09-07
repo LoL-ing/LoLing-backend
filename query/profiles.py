@@ -8,7 +8,6 @@ SELECT lol_name
  WHERE LOL_NAME = %(lol_name)s;
 """
 
-
 SELECT_USERS_LINE_STAT = """
 SELECT *
   FROM MATCHES.MART_USER_BEST_LINE

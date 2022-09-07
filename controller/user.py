@@ -139,3 +139,13 @@ def email_auth(email):
     # 디비에 비번 넣을떄 : hash_pw = bcrypt.hashpw(reg_info.pw.encode("utf-8"), bcrypt.gensalt())
     # 인증 처리
     return True
+
+def get_friends(lol_name: str):
+
+    rds_conn = get_rds_db_connection()
+    where_arg = {"lol_name": lol_name}
+    friend_lol_names=  exec_query(rds_conn, query.GET_FRIENDS_LOL_NAME, input_params= where_arg)
+
+    return friend_lol_names
+
+
