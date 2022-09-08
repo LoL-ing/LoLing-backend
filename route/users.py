@@ -48,3 +48,7 @@ def route_get_token(request: Request):
 @router.get("/freinds")
 def route_get_friends(lol_name: str):
     return get_friends(lol_name = lol_name)
+
+@router.get("/friend_profiles")
+def route_get_friend_profiles(lol_name: str):
+    return get_friend_profiles(lol_name = lol_name)

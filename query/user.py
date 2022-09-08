@@ -42,3 +42,10 @@ SELECT friend_lol_name
  WHERE lol_name = %(lol_name)s
  ;
 """
+
+GET_FRIEND_PROFILES = """
+SELECT *
+  FROM USERS.USER
+ WHERE lol_name = %(lol)name)s
+ ;
+"""

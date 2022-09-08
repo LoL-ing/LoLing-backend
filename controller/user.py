@@ -148,4 +148,11 @@ def get_friends(lol_name: str):
 
     return friend_lol_names
 
+def get_friend_profiles(lol_name: str):
 
+    rds_conn = get_rds_db_connection()
+    friends = get_friends(lol_name)
+    where_arg = {"friend_lol_name" : friends}
+    friend_profiles= exec_query(rds_conn, query.GET_FRIEND_PROFILES, input_params= where_arg)
+
+    return friend_profiles
