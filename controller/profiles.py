@@ -162,5 +162,8 @@ def get_profile(lol_name: str):
     )
 
     # dict 형식으로 바꿔준건가?
+    print(lol_account)
+    print()
+    print({**lol_account[0], "champ_info": champ_info, "line_info": line_info})
 
     return {**lol_account[0], "champ_info": champ_info, "line_info": line_info}
