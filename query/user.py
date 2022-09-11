@@ -43,9 +43,8 @@ SELECT friend_lol_name
  ;
 """
 
-GET_FRIEND_PROFILES = """
-SELECT *
-  FROM USERS.USER
- WHERE lol_name = %(lol)name)s
- ;
-"""
+# GET_FRIEND_PROFILES + lol_name + 
+# ';'
+# 1. 아까 한 것처럼 dict 
+# 2. %s 를 써서 array 
+# 3. string concat

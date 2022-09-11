@@ -16,6 +16,7 @@ from mysql.connector.errors import Error as mysqlError
 from exception import LOLINGDBRequestFailException
 from starlette.status import *
 from query import user as query
+from controller import profiles as profile
 
 load_dotenv()
 secret_key = os.environ.get("SECRET_KEY")
@@ -151,8 +152,17 @@ def get_friends(lol_name: str):
 def get_friend_profiles(lol_name: str):
 
     rds_conn = get_rds_db_connection()
-    friends = get_friends(lol_name)
-    where_arg = {"friend_lol_name" : friends}
-    friend_profiles= exec_query(rds_conn, query.GET_FRIEND_PROFILES, input_params= where_arg)
+    friends= get_friends(lol_name)
+    friend_profiles = []
+    for friend in friends:
+        friend_profiles.append(profile.get_profile(friend["friend_lol_name"]))
+
+    # 파이썬에서의 포문은 each를 가져옴, index 1,2등을 당연히 가져오는것이 아님. 
+            
+
+
+    # where_arg = {"friend_lol_name" : friends}
+    # friend_lol_name 이 키값중 하나인것임 
+    # friend_profiles= exec_query(rds_conn, query.GET_FRIEND_PROFILES, input_params= where_arg)
 
     return friend_profiles

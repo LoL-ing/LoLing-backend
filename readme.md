@@ -14,3 +14,7 @@
    a. https://blog.minamiland.com/551 --> 해결못함
 
 pip install -r requirements.txt
+
+
+4. aws 배포 
+'./scripts/restart_app.sh' 

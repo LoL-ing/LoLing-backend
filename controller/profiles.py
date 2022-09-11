@@ -161,4 +161,6 @@ def get_profile(lol_name: str):
         )
     )
 
+    # dict 형식으로 바꿔준건가?
+
     return {**lol_account[0], "champ_info": champ_info, "line_info": line_info}
