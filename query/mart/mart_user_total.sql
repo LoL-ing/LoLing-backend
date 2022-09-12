@@ -1,16 +1,14 @@
--- 전체 승률 / kda
-SELECT lol_name
-     , COUNT(*) as total_count
-     , AVG(IF(win, 1, 0)) as total_win_rate
-     , IF(deaths = 0, AVG((kills + assists) / deaths), AVG((kills + assists)* 1.2)) as total_kda
-  FROM MATCHES.USERS_MATCH_HISTORY A
- WHERE A.lol_name = '고려대 김자헌'
- GROUP BY lol_name
- ORDER BY total_count desc
--- limit 2
-;
+-- SELECT lol_name
+--      , COUNT(*) as total_count
+--      , AVG(IF(win, 1, 0)) as total_win_rate
+--      , IF(deaths = 0, AVG((kills + assists) / deaths), AVG((kills + assists)* 1.2)) as total_kda
+--   FROM MATCHES.USERS_MATCH_HISTORY A
+--  WHERE A.lol_name = '{{ params.lol_name }}'
+--  GROUP BY lol_name
+--  ORDER BY total_count desc
+-- ;
 
-# 전체 승률, 전체 kda update
+-- 전체 승률, 전체 kda update
 UPDATE USERS.LOL_ACCOUNT B
   LEFT OUTER JOIN
       (SELECT lol_name
@@ -18,7 +16,7 @@ UPDATE USERS.LOL_ACCOUNT B
      , AVG(IF(win, 1, 0)) as total_win_rate
      , IF(deaths = 0, AVG((kills + assists) / deaths), AVG((kills + assists)* 1.2)) as total_kda
   FROM MATCHES.USERS_MATCH_HISTORY A
- WHERE A.lol_name = '고려대 김자헌'
+ WHERE A.lol_name = '{{ params.lol_name }}'
  GROUP BY lol_name
  ORDER BY total_count desc) C
     ON C.lol_name=B.lol_name

@@ -23,6 +23,7 @@ from db_connection.rds import (
     exec_insert_query,
     exec_multiple_queries,
     exec_query,
+    exec_sql_file,
     get_rds_db_connection,
 )
 from query.riot import (
@@ -37,6 +38,7 @@ from query.riot import (
     UPDATE_USERS_MATCH_ODS_YN,
     UPDATE_USERS_MATCH_ODS_YN_WHERE,
 )
+
 
 load_dotenv()
 api_key = os.environ.get("RIOT_API_KEY")
@@ -56,53 +58,40 @@ def post_lol_info(signin_id: str, lol_name: str):
     # user 정보 DB INSERT
     # user_info 넣을 때, lol_name 만 insert 해두고 나머지를 update 할 지.. update 로 할 지? lock 때문에
     user_id_info = get_user_id(lol_name)
-    user_info = get_user_info(user_id_info.get("id"))
+    user_info = get_user_info(user_id_info.get("id", ""))
 
+    solo_5x5_info = {}
+    flex_sr_info = {}
+    for info in user_info:
+        if info.get("queueType", "") == "RANKED_FLEX_SR":
+            flex_sr_info = info
+        elif info.get("queueType", "") == "RANKED_SOLO_5x5":
+            solo_5x5_info = info
     exec_query(
         global_rds_conn,
         DELETE_LOL_ACCOUNT,
         select_flag=False,
-        input_params={"lol_name": lol_name},
+        input_params={"lol_name": lol_name, "signin_id": signin_id},
     )
 
     exec_insert_query(
         global_rds_conn,
         INSERT_LOL_ACCOUNT,
         input_params={
+            "signin_id": signin_id,
             "lol_name": lol_name,
             "user_id": user_id_info.get("id"),
             "puuid": user_id_info.get("puuid"),
-            "wins": user_info.get("wins"),
-            "losses": user_info.get("losses"),
-            "tier": " ".join([user_info.get("tier"), user_info.get("rank")]),
-        },
-    )
-
-    exec_query(
-        global_rds_conn,
-        DELETE_USER_LOL_ACCOUNT_MAP,
-        select_flag=False,
-        input_params={
-            "signin_id": signin_id,
-            "lol_name": lol_name,
-        },
-    )
-
-    exec_insert_query(
-        global_rds_conn,
-        INSERT_USER_LOL_ACCOUNT_MAP,
-        input_params={
-            "signin_id": signin_id,
-            "lol_name": lol_name,
-        },
-    )
-
-    exec_query(
-        global_rds_conn,
-        DELETE_USERS_MATCH_MAP,
-        select_flag=False,
-        input_params={
-            "lol_name": lol_name,
+            "wins": solo_5x5_info.get("wins"),
+            "losses": solo_5x5_info.get("losses"),
+            "tier": " ".join(
+                [solo_5x5_info.get("tier", ""), solo_5x5_info.get("rank", "")]
+            ),
+            "wins_sr": flex_sr_info.get("wins"),
+            "losses_sr": flex_sr_info.get("losses"),
+            "tier_sr": " ".join(
+                [flex_sr_info.get("tier", ""), flex_sr_info.get("rank", "")]
+            ),
         },
     )
 
@@ -115,7 +104,7 @@ def post_lol_info(signin_id: str, lol_name: str):
             input_params=[
                 {
                     "lol_name": lol_name,
-                    "match_type": queue_type,
+                    "queue_type": queue_type,
                     "match_id": match_id,
                 }
                 for match_id in match_ids
@@ -150,11 +139,7 @@ def get_user_info(id: str):
     if not riot_user_info_response and len(riot_user_info_response) < 1:
         return JSONResponse(status_code=404, content=dict(msg="잘못된 소환사 id"))
 
-    return (
-        riot_user_info_response[0]
-        if isinstance(riot_user_info_response, list)
-        else riot_user_info_response
-    )
+    return riot_user_info_response
 
 
 # 420 : 솔로랭크 440 : 자유랭크
@@ -230,7 +215,7 @@ def get_match_info_by_user(match_id: str, puuid: str):
     return {
         "puuid": puuid,
         "match_id": match_id,
-        "match_type": match_info.get("queueId"),
+        "queue_type": match_info.get("queueId"),
         "line_name": result.get("individualPosition"),
         "champ_name": result.get("championName"),
         "kills": result.get("kills"),
@@ -280,7 +265,7 @@ def get_match_info_ods(lol_name: str):
                 "info": json.dumps(response.get("info"), ensure_ascii=False),
             }
         )
-        if idx > 12:
+        if idx > 20:
             break
     if not ret:
         return {"status_code": HTTP_404_NOT_FOUND, "message": "API 요청 실패"}
@@ -352,3 +337,33 @@ def get_login(id: str, pwd: str):
         return JSONResponse(status_code=200, content=dict(msg="셀레니움 로그인 성공"))
     else:
         return JSONResponse(status_code=404, content=dict(msg="셀레니움 로그인 실패"))
+
+
+def put_fact(lol_name: str):
+    global global_rds_conn
+    dir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
+
+    """
+    1. fact 이전인 모든 ODS fact 처리
+    2. 모든 ODS 'Y' 상태로 update
+    3. 해당 lol_name 에 대해서 mart / lol_account 에 update 시키기
+    4. DB 가지고 있는 데이터 바탕으로 전체 승률, KDA update 
+    """
+    # 1, 2
+    exec_sql_file("/".join([dir, "query", "fact", "users_match_history.sql"]))
+
+    # 3
+    exec_sql_file(
+        "/".join([dir, "query", "mart", "update_lol_account_info.sql"]),
+        p_lol_name=lol_name,
+    )
+
+    # 4
+    exec_sql_file(
+        "/".join([dir, "query", "mart", "mart_user_total.sql"]),
+        p_lol_name=lol_name,
+    )
+
+    return JSONResponse(
+        status_code=200, content=dict(msg=f"ODS 전체 FACT / {lol_name} MART 정보 update 성공")
+    )

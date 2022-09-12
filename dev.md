@@ -106,11 +106,11 @@ def route_get_profile(user_info: dict = Depends(auth_required)):
 
 
 # 09-12 김민규
-## 문제점
+## 한 일
 1. profile 가져올 때, 총 3번의 트랜잭션이 필요함.
-2. 친구가 많아지면 각 친구의 profile 가져올 때, 친구 수 * 3 의 트랜잭션이 일어나므로 서버 다운 가능
-3. LOL_ACCOUNT TABLE 에 축약해둔 정보를 모두 넣어둬서, LOL_ACCOUNT TABLE 자체가 PROFILE 이 될 수 있게끔 하자. (C)
-4. 아래와 같은 형태의 `JSON` 이 테이블에 들어가서, PROFILE 가져오는 것을 하나의 SELECT 로 할 수 있게끔 하자 
+   1. 친구가 많아지면 각 친구의 profile 가져올 때, 친구 수 * 3 의 트랜잭션이 일어나므로 서버 다운 가능
+   2. LOL_ACCOUNT TABLE 에 축약해둔 정보를 모두 넣어둬서, LOL_ACCOUNT TABLE 자체가 PROFILE 이 될 수 있게끔 하자. (C)
+   3. 아 래와 같은 형태의 `JSON` 이 테이블에 들어가서, PROFILE 가져오는 것을 하나의 SELECT 로 할 수 있게끔 하자 
   [
    {
       "CHAMP_KDA":9.1111,
@@ -162,3 +162,17 @@ def route_get_profile(user_info: dict = Depends(auth_required)):
       "CHAMP_WIN_RATE":0.0
    }
 ]
+2. USER_LOL_ACCOUNT_MAP 테이블의 의미 없음 -> LOL_ACCOUNT 에 통합
+3. 솔로 랭크와 자유 랭크 구분지어서 TABLE INSERT 
+4. MATCH_ID_MAP TABLE 로직 수정
+5. ODS 데이터 가져온 뒤, FACT -> MART 실행시키는 라우트 추가
+   1. 모든 ODS 데이터를 FACT 처리 했는데.. 데이터 많아지면 수동 갱신 시에 시간 오래 걸릴 수 있겠음.
+   2. generator raised StopIteration error
+      1. https://peps.python.org/pep-0479/
+      2. https://groups.google.com/g/sqlalchemy-alembic/c/xOWM2F2SCSY
+         1. mysql-connector-python==8.0.28 의 버전 문제였다. 해당 버전으로 업그레이드 하자.
+
+## 해야할 일
+1. kda 산출 로직이 이상한 듯 함
+2. mart_user_total 결과가 수상함
+   1. riot API 에서 제공하는 승리 / 패배 수를 lol_account 에 넣을 것인지, 실제 DB 에 있는 데이터로만 lol_account 정보를 update 칠 것인지 정해야 함

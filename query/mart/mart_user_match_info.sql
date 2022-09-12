@@ -12,7 +12,7 @@
   FROM (
 SELECT A.summoner_name AS lol_name
      , A.match_id AS match_id
-     , A.queue_type AS match_type
+     , A.queue_type AS queue_type
      , 'Y' AS info_yn
      , JSON_EXTRACT(A.match_user_info, '$.lane') AS line_name
      , JSON_EXTRACT(A.match_user_info, '$.championName') AS champ_name

@@ -46,3 +46,8 @@ def route_get_match_info(lol_name: str):
 @router.get("/login")
 def route_get_selenium_login(id: str, pwd: str):
     return get_login(id=id, pwd=pwd)
+
+
+@router.put("/fact")
+def route_put_fact(lol_name: str):
+    return put_fact(lol_name=lol_name)
