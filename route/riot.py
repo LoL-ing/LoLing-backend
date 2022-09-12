@@ -12,6 +12,21 @@ def route_post_lol_info(signin_id: str, lol_name: str):
     return post_lol_info(signin_id, lol_name)
 
 
+@router.post("/match-info/ods")
+def route_get_match_info(lol_name: str):
+    return get_match_info_ods(lol_name=lol_name)
+
+
+@router.post("/match-info/fact-mart")
+def route_put_fact(lol_name: str):
+    return put_fact(lol_name=lol_name)
+
+
+@router.post("/login")
+def route_get_selenium_login(id: str, pwd: str):
+    return get_login(id=id, pwd=pwd)
+
+
 @router.get("/user_id")
 def route_get_user_id(lol_name: str):
     return get_user_id(lol_name=lol_name)
@@ -36,18 +51,3 @@ def route_get_match_info(match_id: str, puuid: str):
 @router.get("/match-info")
 def route_get_match_info(match_id: str):
     return get_match_info(match_id=match_id)
-
-
-@router.get("/match-info/ods")
-def route_get_match_info(lol_name: str):
-    return get_match_info_ods(lol_name=lol_name)
-
-
-@router.get("/login")
-def route_get_selenium_login(id: str, pwd: str):
-    return get_login(id=id, pwd=pwd)
-
-
-@router.put("/fact")
-def route_put_fact(lol_name: str):
-    return put_fact(lol_name=lol_name)

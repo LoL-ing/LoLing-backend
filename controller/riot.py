@@ -19,6 +19,8 @@ from selenium.webdriver.chrome.options import Options
 from datetime import datetime
 import time
 
+from util import center_str_by_unciode_len, get_customized_logger
+
 from db_connection.rds import (
     exec_insert_query,
     exec_multiple_queries,
@@ -51,6 +53,8 @@ season_start_date = str(
 ).split(".")[0]
 
 global_rds_conn = get_rds_db_connection()
+
+logger = get_customized_logger()
 
 
 def post_lol_info(signin_id: str, lol_name: str):
@@ -403,15 +407,19 @@ def put_fact(lol_name: str):
     3. 해당 lol_name 에 대해서 mart / lol_account 에 update 시키기
     4. DB 가지고 있는 데이터 바탕으로 전체 승률, KDA update 
     """
+
+    logger.info(center_str_by_unciode_len(" users_match_history.sql ", 100, "-"))
     # 1, 2
     exec_sql_file("/".join([dir, "query", "fact", "users_match_history.sql"]))
 
+    logger.info(center_str_by_unciode_len(" update_lol_account_info.sql ", 100, "-"))
     # 3
     exec_sql_file(
         "/".join([dir, "query", "mart", "update_lol_account_info.sql"]),
         p_lol_name=lol_name,
     )
 
+    logger.info(center_str_by_unciode_len(" mart_user_total.sql ", 100, "-"))
     # 4
     exec_sql_file(
         "/".join([dir, "query", "mart", "mart_user_total.sql"]),
