@@ -6,6 +6,8 @@ SELECT lol_name
      , losses
      , total_kda
      , total_win_rate
+     , champ_info
+     , line_info
   FROM USERS.LOL_ACCOUNT
  WHERE LOL_NAME = %(lol_name)s;
 """
