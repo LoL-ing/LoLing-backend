@@ -16,5 +16,8 @@
 pip install -r requirements.txt
 
 
-4. aws 배포 
+4. 
+pem키 인증
+ssh -i "LoLing-backend.pem" ubuntu@ec2-54-165-207-136.compute-1.amazonaws.com
+aws 배포 
 './scripts/restart_app.sh' 
