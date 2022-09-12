@@ -103,3 +103,62 @@ def route_get_profile(user_info: dict = Depends(auth_required)):
    1. 데이터 형식도 맞춰야 해서 프론트 - 백 하는 사람 같이 붙어서 해보기
 2. 채팅 DB + 백엔드 구상
 3. FAQ / 공지사항 DB + 백엔드
+
+
+# 09-12 김민규
+## 문제점
+1. profile 가져올 때, 총 3번의 트랜잭션이 필요함.
+2. 친구가 많아지면 각 친구의 profile 가져올 때, 친구 수 * 3 의 트랜잭션이 일어나므로 서버 다운 가능
+3. LOL_ACCOUNT TABLE 에 축약해둔 정보를 모두 넣어둬서, LOL_ACCOUNT TABLE 자체가 PROFILE 이 될 수 있게끔 하자. (C)
+4. 아래와 같은 형태의 `JSON` 이 테이블에 들어가서, PROFILE 가져오는 것을 하나의 SELECT 로 할 수 있게끔 하자 
+  [
+   {
+      "CHAMP_KDA":9.1111,
+      "CHAMP_NAME":"Katarina",
+      "QUEUE_TYPE":"N/A",
+      "CHAMP_COUNT":18,
+      "CHAMP_WIN_RATE":0.4444
+   },
+   {
+      "CHAMP_KDA":9.6667,
+      "CHAMP_NAME":"Kayn",
+      "QUEUE_TYPE":"N/A",
+      "CHAMP_COUNT":3,
+      "CHAMP_WIN_RATE":0.3333
+   },
+   {
+      "CHAMP_KDA":15.6667,
+      "CHAMP_NAME":"Zed",
+      "QUEUE_TYPE":"N/A",
+      "CHAMP_COUNT":3,
+      "CHAMP_WIN_RATE":0.3333
+   },
+   {
+      "CHAMP_KDA":6.5,
+      "CHAMP_NAME":"Malphite",
+      "QUEUE_TYPE":"N/A",
+      "CHAMP_COUNT":2,
+      "CHAMP_WIN_RATE":0.5
+   },
+   {
+      "CHAMP_KDA":19.0,
+      "CHAMP_NAME":"Blitzcrank",
+      "QUEUE_TYPE":"N/A",
+      "CHAMP_COUNT":1,
+      "CHAMP_WIN_RATE":1.0
+   },
+   {
+      "CHAMP_KDA":23.0,
+      "CHAMP_NAME":"Kassadin",
+      "QUEUE_TYPE":"N/A",
+      "CHAMP_COUNT":1,
+      "CHAMP_WIN_RATE":1.0
+   },
+   {
+      "CHAMP_KDA":0.0,
+      "CHAMP_NAME":"Viktor",
+      "QUEUE_TYPE":"N/A",
+      "CHAMP_COUNT":1,
+      "CHAMP_WIN_RATE":0.0
+   }
+]

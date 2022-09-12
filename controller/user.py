@@ -141,28 +141,30 @@ def email_auth(email):
     # 인증 처리
     return True
 
+
 def get_friends(lol_name: str):
 
     rds_conn = get_rds_db_connection()
     where_arg = {"lol_name": lol_name}
-    friend_lol_names=  exec_query(rds_conn, query.GET_FRIENDS_LOL_NAME, input_params= where_arg)
+    friend_lol_names = exec_query(
+        rds_conn, query.GET_FRIENDS_LOL_NAME, input_params=where_arg
+    )
 
     return friend_lol_names
+
 
 def get_friend_profiles(lol_name: str):
 
     rds_conn = get_rds_db_connection()
-    friends= get_friends(lol_name)
+    friends = get_friends(lol_name)
     friend_profiles = []
     for friend in friends:
-        friend_profiles.append(profile.get_profile(friend["friend_lol_name"]))
+        friend_profiles.append(profile.get_profile(friend.get("friend_lol_name", "")))
 
-    # 파이썬에서의 포문은 each를 가져옴, index 1,2등을 당연히 가져오는것이 아님. 
-            
-
+    # 파이썬에서의 포문은 each를 가져옴, index 1,2등을 당연히 가져오는것이 아님.
 
     # where_arg = {"friend_lol_name" : friends}
-    # friend_lol_name 이 키값중 하나인것임 
+    # friend_lol_name 이 키값중 하나인것임
     # friend_profiles= exec_query(rds_conn, query.GET_FRIEND_PROFILES, input_params= where_arg)
 
     return friend_profiles
