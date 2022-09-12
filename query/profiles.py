@@ -8,6 +8,8 @@ SELECT lol_name
      , total_win_rate
      , champ_info
      , line_info
+     , champ_info_sr
+     , line_info_sr
   FROM USERS.LOL_ACCOUNT
  WHERE LOL_NAME = %(lol_name)s;
 """
