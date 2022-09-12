@@ -1,23 +1,32 @@
 DELETE_LOL_ACCOUNT = """
 DELETE FROM USERS.LOL_ACCOUNT
  WHERE lol_name = %(lol_name)s
+   AND signin_id = %(signin_id)s
 ;
 """
 INSERT_LOL_ACCOUNT = """
 INSERT INTO USERS.LOL_ACCOUNT (
-       lol_name
+       signin_id
+     , lol_name
      , id
      , puuid
      , wins
      , losses
      , tier
+     , wins_sr
+     , losses_sr
+     , tier_sr
 ) VALUES (
-       %(lol_name)s 
+       %(signin_id)s
+     , %(lol_name)s 
      , %(user_id)s
      , %(puuid)s
      , %(wins)s
      , %(losses)s
      , %(tier)s
+     , %(wins_sr)s
+     , %(losses_sr)s
+     , %(tier_sr)s
 )
 ;
 """
@@ -51,14 +60,17 @@ INSERT_USERS_MATCH_MAP = """
 INSERT INTO MATCHES.USERS_MATCH_MAP (
        lol_name
      , match_id
-     , match_type
+     , queue_type
      , ods_yn
+     , CREATED_DTTM
 ) VALUES (
        %(lol_name)s
      , %(match_id)s
-     , %(match_type)s
+     , %(queue_type)s
      , 'N'
+     , NOW()
 )
+    ON DUPLICATE KEY UPDATE UPDATED_DTTM = NOW()
 ;
 """
 

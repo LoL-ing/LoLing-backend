@@ -128,39 +128,20 @@ def get_profile(lol_name: str):
     where_arg = {"lol_name": lol_name}
 
     lol_account = exec_query(rds_conn, SELECT_LOL_ACCOUNT, input_params=where_arg)
-    user_line_stat = exec_query(
-        rds_conn, SELECT_USERS_LINE_STAT, input_params=where_arg
-    )
-    user_champ_stat = exec_query(
-        rds_conn, SELECT_USERS_CHAMP_STAT, input_params=where_arg
-    )
 
-    champ_info = list(
+    lol_account = list(
         map(
-            lambda row: {
-                "QUEUE_TYPE": row.get("QUEUE_TYPE"),
-                "CHAMP_NAME": row.get("CHAMP_NAME"),
-                "CHAMP_COUNT": row.get("CHAMP_COUNT"),
-                "CHAMP_WIN_RATE": row.get("CHAMP_WIN_RATE"),
-                "CHAMP_KDA": row.get("CHAMP_KDA"),
+            lambda data: {
+                **data,
+                "champ_info": json.loads(data.get("champ_info", {})),
+                "line_info": json.loads(data.get("line_info", {})),
+                "champ_info_sr": json.loads(data.get("champ_info_sr", {})),
+                "line_info_sr": json.loads(data.get("line_info_sr", {})),
             },
-            user_champ_stat,
+            lol_account,
         )
     )
 
-    line_info = list(
-        map(
-            lambda row: {
-                "QUEUE_TYPE": row.get("QUEUE_TYPE"),
-                "LINE_NAME": row.get("LINE_NAME"),
-                "LINE_COUNT": row.get("LINE_COUNT"),
-                "LINE_WIN_RATE": row.get("LINE_WIN_RATE"),
-                "LINE_KDA": row.get("LINE_KDA"),
-            },
-            user_line_stat,
-        )
-    )
+    # dict 형식으로 바꿔준건가? ㅇㅇ 그런거지
 
-    # dict 형식으로 바꿔준건가?
-
-    return {**lol_account[0], "champ_info": champ_info, "line_info": line_info}
+    return {**lol_account[0]}
