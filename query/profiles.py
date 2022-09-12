@@ -8,6 +8,11 @@ SELECT lol_name
      , total_win_rate
      , champ_info
      , line_info
+     , tier_sr
+     , wins_sr
+     , losses_sr
+     , total_kda_sr
+     , total_win_rate_sr
      , champ_info_sr
      , line_info_sr
   FROM USERS.LOL_ACCOUNT
