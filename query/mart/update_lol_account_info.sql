@@ -1,4 +1,5 @@
 
+SET SESSION group_concat_max_len = 100000;
 -- 챔피언별 승률 / kda 을 LOL_ACCOUNT 에 추가
 UPDATE USERS.LOL_ACCOUNT A
    SET A.champ_info = (SELECT CONCAT('[', GROUP_CONCAT(
@@ -16,7 +17,7 @@ UPDATE USERS.LOL_ACCOUNT A
                                   , champ_name                                                              as CHAMP_NAME
                                   , COUNT(champ_name)                                                       AS CHAMP_COUNT
                                   , AVG(IF(win, 1, 0))                                                      AS CHAMP_WIN_RATE
-                                  , IF(AVG(kills + assists - deaths) > 0, AVG(kills + assists - deaths), 0) as CHAMP_KDA
+                                  , IF(AVG((kills + assists) / IF(deaths = 0, 1, deaths)) > 0, AVG((kills + assists) / IF(deaths = 0, 1, deaths)), 0) as CHAMP_KDA
                              FROM MATCHES.USERS_MATCH_HISTORY A
                              WHERE A.lol_name = '{{ params.lol_name }}'
                                AND A.queue_type = '420'
@@ -37,7 +38,7 @@ UPDATE USERS.LOL_ACCOUNT A
                                   , line_name                                                              as LINE_NAME
                                   , COUNT(line_name)                                                       AS LINE_COUNT
                                   , AVG(IF(win, 1, 0))                                                      AS LINE_WIN_RATE
-                                  , IF(AVG(kills + assists - deaths) > 0, AVG(kills + assists - deaths), 0) as LINE_KDA
+                                  , IF(AVG((kills + assists) / IF(deaths = 0, 1, deaths)) > 0, AVG((kills + assists) / IF(deaths = 0, 1, deaths)), 0) as LINE_KDA
                              FROM MATCHES.USERS_MATCH_HISTORY A
                              WHERE A.lol_name = '{{ params.lol_name }}'
                                AND A.queue_type = '420'
@@ -58,7 +59,7 @@ UPDATE USERS.LOL_ACCOUNT A
                                   , champ_name                                                              as CHAMP_NAME
                                   , COUNT(champ_name)                                                       AS CHAMP_COUNT
                                   , AVG(IF(win, 1, 0))                                                      AS CHAMP_WIN_RATE
-                                  , IF(AVG(kills + assists - deaths) > 0, AVG(kills + assists - deaths), 0) as CHAMP_KDA
+                                  , IF(AVG((kills + assists) / IF(deaths = 0, 1, deaths)) > 0, AVG((kills + assists) / IF(deaths = 0, 1, deaths)), 0) as CHAMP_KDA
                              FROM MATCHES.USERS_MATCH_HISTORY A
                              WHERE A.lol_name = '{{ params.lol_name }}'
                                AND A.queue_type = '440'
@@ -79,7 +80,7 @@ UPDATE USERS.LOL_ACCOUNT A
                                   , line_name                                                              as LINE_NAME
                                   , COUNT(line_name)                                                       AS LINE_COUNT
                                   , AVG(IF(win, 1, 0))                                                      AS LINE_WIN_RATE
-                                  , IF(AVG(kills + assists - deaths) > 0, AVG(kills + assists - deaths), 0) as LINE_KDA
+                                  , IF(AVG((kills + assists) / IF(deaths = 0, 1, deaths)) > 0, AVG((kills + assists) / IF(deaths = 0, 1, deaths)), 0) as LINE_KDA
                              FROM MATCHES.USERS_MATCH_HISTORY A
                              WHERE A.lol_name = '{{ params.lol_name }}'
                                AND A.queue_type = '440'

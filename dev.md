@@ -171,6 +171,9 @@ def route_get_profile(user_info: dict = Depends(auth_required)):
       1. https://peps.python.org/pep-0479/
       2. https://groups.google.com/g/sqlalchemy-alembic/c/xOWM2F2SCSY
          1. mysql-connector-python==8.0.28 의 버전 문제였다. 해당 버전으로 업그레이드 하자.
+   3. 3140 (22032): Invalid JSON text: "Missing a closing quotation mark in string." at position 1026 in value for column 'A.champ_info'. 
+      1. https://stackoverflow.com/questions/54545265/nested-json-object-from-mysql-error-missing-a-closing-quotation-mark-in-string
+      2. json 다룰 때 GROUP CONCAT 의 최대 길이가 있나 보다.. 위의 url 참조
 
 ## 해야할 일
 1. kda 산출 로직이 이상한 듯 함

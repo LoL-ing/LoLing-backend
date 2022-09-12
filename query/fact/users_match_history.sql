@@ -7,7 +7,7 @@ SELECT A.summoner_name AS lol_name
      , JSON_UNQUOTE(JSON_EXTRACT(A.match_user_info, '$.kills')) AS kills
      , JSON_UNQUOTE(JSON_EXTRACT(A.match_user_info, '$.deaths')) AS deaths
      , JSON_UNQUOTE(JSON_EXTRACT(A.match_user_info, '$.assists')) AS assists
-     , JSON_UNQUOTE(JSON_EXTRACT(A.match_user_info, '$.win')) AS win
+     , IF(JSON_UNQUOTE(JSON_EXTRACT(A.match_user_info, '$.win')) = 'true', 1, 0) AS win
      , A.participants AS participants
      , NOW() AS CREATED_DTTM
      , NULL AS UPDATED_DTTM
