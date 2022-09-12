@@ -13,10 +13,10 @@ UPDATE USERS.LOL_ACCOUNT A
                 )               
                                   , ']')
                          FROM (SELECT lol_name                                                                as LOL_NAME
-                                  , '420'                                                                   as QUEUE_TYPE
-                                  , champ_name                                                              as CHAMP_NAME
-                                  , COUNT(champ_name)                                                       AS CHAMP_COUNT
-                                  , AVG(IF(win, 1, 0))                                                      AS CHAMP_WIN_RATE
+                                  , '420'                                                                     as QUEUE_TYPE
+                                  , champ_name                                                                as CHAMP_NAME
+                                  , COUNT(champ_name)                                                         AS CHAMP_COUNT
+                                  , AVG(IF(win, 1, 0))                                                        AS CHAMP_WIN_RATE
                                   , IF(AVG((kills + assists) / IF(deaths = 0, 1, deaths)) > 0, AVG((kills + assists) / IF(deaths = 0, 1, deaths)), 0) as CHAMP_KDA
                              FROM MATCHES.USERS_MATCH_HISTORY A
                              WHERE A.lol_name = '{{ params.lol_name }}'
@@ -35,8 +35,8 @@ UPDATE USERS.LOL_ACCOUNT A
                                   , ']')
                        FROM (SELECT lol_name                                                                as LOL_NAME
                                   , '420'                                                                   as QUEUE_TYPE
-                                  , line_name                                                              as LINE_NAME
-                                  , COUNT(line_name)                                                       AS LINE_COUNT
+                                  , line_name                                                               as LINE_NAME
+                                  , COUNT(line_name)                                                        AS LINE_COUNT
                                   , AVG(IF(win, 1, 0))                                                      AS LINE_WIN_RATE
                                   , IF(AVG((kills + assists) / IF(deaths = 0, 1, deaths)) > 0, AVG((kills + assists) / IF(deaths = 0, 1, deaths)), 0) as LINE_KDA
                              FROM MATCHES.USERS_MATCH_HISTORY A
@@ -55,10 +55,10 @@ UPDATE USERS.LOL_ACCOUNT A
                 )
                                   , ']')
                              FROM (SELECT lol_name                                                                as LOL_NAME
-                                  , '440'                                                                   as QUEUE_TYPE
-                                  , champ_name                                                              as CHAMP_NAME
-                                  , COUNT(champ_name)                                                       AS CHAMP_COUNT
-                                  , AVG(IF(win, 1, 0))                                                      AS CHAMP_WIN_RATE
+                                  , '440'                                                                         as QUEUE_TYPE
+                                  , champ_name                                                                    as CHAMP_NAME
+                                  , COUNT(champ_name)                                                             AS CHAMP_COUNT
+                                  , AVG(IF(win, 1, 0))                                                            AS CHAMP_WIN_RATE
                                   , IF(AVG((kills + assists) / IF(deaths = 0, 1, deaths)) > 0, AVG((kills + assists) / IF(deaths = 0, 1, deaths)), 0) as CHAMP_KDA
                              FROM MATCHES.USERS_MATCH_HISTORY A
                              WHERE A.lol_name = '{{ params.lol_name }}'
@@ -76,10 +76,10 @@ UPDATE USERS.LOL_ACCOUNT A
        )
                                   , ']')
                             FROM (SELECT lol_name                                                                as LOL_NAME
-                                  , '440'                                                                   as QUEUE_TYPE
-                                  , line_name                                                              as LINE_NAME
-                                  , COUNT(line_name)                                                       AS LINE_COUNT
-                                  , AVG(IF(win, 1, 0))                                                      AS LINE_WIN_RATE
+                                  , '440'                                                                        as QUEUE_TYPE
+                                  , line_name                                                                    as LINE_NAME
+                                  , COUNT(line_name)                                                             AS LINE_COUNT
+                                  , AVG(IF(win, 1, 0))                                                           AS LINE_WIN_RATE
                                   , IF(AVG((kills + assists) / IF(deaths = 0, 1, deaths)) > 0, AVG((kills + assists) / IF(deaths = 0, 1, deaths)), 0) as LINE_KDA
                              FROM MATCHES.USERS_MATCH_HISTORY A
                              WHERE A.lol_name = '{{ params.lol_name }}'

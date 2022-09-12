@@ -26,6 +26,7 @@ from db_connection.rds import (
     exec_sql_file,
     get_rds_db_connection,
 )
+from exception import LOLINGDBRequestFailException
 from query.riot import (
     DELETE_LOL_ACCOUNT,
     INSERT_LOL_ACCOUNT,
@@ -59,6 +60,8 @@ def post_lol_info(signin_id: str, lol_name: str):
     # user_info 넣을 때, lol_name 만 insert 해두고 나머지를 update 할 지.. update 로 할 지? lock 때문에
     user_id_info = get_user_id(lol_name)
     user_info = get_user_info(user_id_info.get("id", ""))
+
+    print(user_id_info, user_info)
 
     solo_5x5_info = {}
     flex_sr_info = {}
@@ -130,10 +133,13 @@ def get_user_info(id: str):
     params = {"api_key": api_key}
 
     riot_user_info_response = requests.get(url, params=params).json()
+
+    print(137, riot_user_info_response)
     if (
         isinstance(riot_user_info_response, dict)
         and riot_user_info_response.get("status", {}).get("status_code") == 400
     ):
+        raise LOLINGDBRequestFailException
         return JSONResponse(status_code=400, content=dict(msg="잘못된 소환사 id"))
 
     if not riot_user_info_response and len(riot_user_info_response) < 1:

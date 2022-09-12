@@ -178,4 +178,5 @@ def route_get_profile(user_info: dict = Depends(auth_required)):
 ## 해야할 일
 1. kda 산출 로직이 이상한 듯 함
 2. mart_user_total 결과가 수상함
-   1. riot API 에서 제공하는 승리 / 패배 수를 lol_account 에 넣을 것인지, 실제 DB 에 있는 데이터로만 lol_account 정보를 update 칠 것인지 정해야 함
+   1. riot API 에서 제공하는 승리 / 패배 수를 lol_account 에 넣을 것인지, 실제 DB 에 있는 데이터로만 lol_account 정보를 update 칠 것인지 정해야 함 -> DB 데이터로 update 하게 바꿈
+3. riot 초기 로그인 세팅할 때, 동딘단, 납 죽 이런게 오류 나는데 원인 분석..

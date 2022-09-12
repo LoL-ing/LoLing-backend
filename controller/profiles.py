@@ -135,6 +135,8 @@ def get_profile(lol_name: str):
                 **data,
                 "champ_info": json.loads(data.get("champ_info", {})),
                 "line_info": json.loads(data.get("line_info", {})),
+                "champ_info_sr": json.loads(data.get("champ_info_sr", {})),
+                "line_info_sr": json.loads(data.get("line_info_sr", {})),
             },
             lol_account,
         )
