@@ -133,10 +133,18 @@ def get_profile(lol_name: str):
         map(
             lambda data: {
                 **data,
-                "champ_info": json.loads(data.get("champ_info", {})),
-                "line_info": json.loads(data.get("line_info", {})),
-                "champ_info_sr": json.loads(data.get("champ_info_sr", {})),
-                "line_info_sr": json.loads(data.get("line_info_sr", {})),
+                "champ_info": json.loads(data.get("champ_info"))
+                if data.get("champ_info") not in ["", None]
+                else [],
+                "line_info": json.loads(data.get("line_info"))
+                if data.get("line_info") not in ["", None]
+                else [],
+                "champ_info_sr": json.loads(data.get("champ_info_sr"))
+                if data.get("champ_info_sr") not in ["", None]
+                else [],
+                "line_info_sr": json.loads(data.get("line_info_sr"))
+                if data.get("line_info_sr") not in ["", None]
+                else [],
             },
             lol_account,
         )
