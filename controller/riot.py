@@ -61,7 +61,32 @@ def post_lol_info(signin_id: str, lol_name: str):
     user_id_info = get_user_id(lol_name)
     user_info = get_user_info(user_id_info.get("id", ""))
 
-    print(user_id_info, user_info)
+    exec_query(
+        global_rds_conn,
+        DELETE_LOL_ACCOUNT,
+        select_flag=False,
+        input_params={"lol_name": lol_name, "signin_id": signin_id},
+    )
+
+    # 이번 시즌 게임 이력이 없으면 빈 리스트 반환
+    if not user_info:
+        exec_insert_query(
+            global_rds_conn,
+            INSERT_LOL_ACCOUNT,
+            input_params={
+                "signin_id": signin_id,
+                "lol_name": lol_name,
+                "user_id": None,
+                "puuid": None,
+                "wins": None,
+                "losses": None,
+                "tier": "UNRANKED",
+                "wins_sr": None,
+                "losses_sr": None,
+                "tier_sr": "UNRANKED",
+            },
+        )
+        return JSONResponse(status_code=400, content=dict(msg="이번 시즌 게임 이력 없음"))
 
     solo_5x5_info = {}
     flex_sr_info = {}
@@ -70,12 +95,6 @@ def post_lol_info(signin_id: str, lol_name: str):
             flex_sr_info = info
         elif info.get("queueType", "") == "RANKED_SOLO_5x5":
             solo_5x5_info = info
-    exec_query(
-        global_rds_conn,
-        DELETE_LOL_ACCOUNT,
-        select_flag=False,
-        input_params={"lol_name": lol_name, "signin_id": signin_id},
-    )
 
     exec_insert_query(
         global_rds_conn,
@@ -89,12 +108,16 @@ def post_lol_info(signin_id: str, lol_name: str):
             "losses": solo_5x5_info.get("losses"),
             "tier": " ".join(
                 [solo_5x5_info.get("tier", ""), solo_5x5_info.get("rank", "")]
-            ),
+            )
+            if solo_5x5_info.get("tier", "") != ""
+            else "UNRANKED",
             "wins_sr": flex_sr_info.get("wins"),
             "losses_sr": flex_sr_info.get("losses"),
             "tier_sr": " ".join(
                 [flex_sr_info.get("tier", ""), flex_sr_info.get("rank", "")]
-            ),
+            )
+            if flex_sr_info.get("tier", "") != ""
+            else "UNRANKED",
         },
     )
 
@@ -128,22 +151,29 @@ def get_user_id(lol_name: str):
     return riot_user_response
 
 
-def get_user_info(id: str):
-    url = "/".join([RIOT_API_URLS["GET_USER_INFO"], id])
+def get_user_info(user_id: str):
+    url = "/".join([RIOT_API_URLS["GET_USER_INFO"], parse.quote(user_id)])
     params = {"api_key": api_key}
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36",
+        "Accept-Language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,ja;q=0.6",
+        "Accept-Charset": "application/x-www-form-urlencoded; charset=UTF-8",
+        "Origin": "https://developer.riotgames.com",
+        "Content-Type": "application/x-www-form-urlencoded",
+    }
+    riot_user_info_response = requests.get(
+        url, headers=headers, params=parse.urlencode(params)
+    ).json()
 
-    riot_user_info_response = requests.get(url, params=params).json()
-
-    print(137, riot_user_info_response)
     if (
         isinstance(riot_user_info_response, dict)
         and riot_user_info_response.get("status", {}).get("status_code") == 400
     ):
-        raise LOLINGDBRequestFailException
-        return JSONResponse(status_code=400, content=dict(msg="잘못된 소환사 id"))
+        # TODO 없는 소환사 아이디에 대한 오류 분기 추가해야함
+        return []
 
     if not riot_user_info_response and len(riot_user_info_response) < 1:
-        return JSONResponse(status_code=404, content=dict(msg="잘못된 소환사 id"))
+        return []
 
     return riot_user_info_response
 
@@ -243,6 +273,24 @@ def get_match_info(match_id: str):
 def get_match_info_ods(lol_name: str):
     global global_rds_conn
 
+    # ODS 데이터 수집 전, match id 최신화
+    for queue_type in ["420", "440"]:
+        match_ids = get_recent_games(lol_name, queue_type=queue_type)
+
+        exec_multiple_queries(
+            global_rds_conn,
+            INSERT_USERS_MATCH_MAP,
+            input_params=[
+                {
+                    "lol_name": lol_name,
+                    "queue_type": queue_type,
+                    "match_id": match_id,
+                }
+                for match_id in match_ids
+            ],
+        )
+
+    # DB 에 있는 match id 중, ODS 수집 하지 않은 match id 만 가져오기
     match_ids = exec_query(
         global_rds_conn, SELECT_MATCH_ID_INFO_N, input_params={"lol_name": lol_name}
     )
@@ -253,12 +301,13 @@ def get_match_info_ods(lol_name: str):
     ret = []
     for idx, data in enumerate(match_ids):
         match_id = data.get("match_id")
+        print(f"{idx} 번 : {match_id}".center(50, "-"))
 
         url = "/".join([RIOT_API_URLS["GET_MATCH_INFO"], match_id])
         params = {"api_key": api_key}
         response = requests.get(url, params=params).json()
         if response.get("status", {}).get("status_code") == 429:
-            print("요청 횟수 초과")
+            print(f"요청 횟수 초과 {idx} 개 요청".center(100, "-"))
             break
         elif response.get("status", {}).get("status_code") == 403:
             print("Forbidden")
@@ -271,8 +320,8 @@ def get_match_info_ods(lol_name: str):
                 "info": json.dumps(response.get("info"), ensure_ascii=False),
             }
         )
-        if idx > 20:
-            break
+        # if idx > 20:
+        #     break
     if not ret:
         return {"status_code": HTTP_404_NOT_FOUND, "message": "API 요청 실패"}
 
@@ -346,7 +395,6 @@ def get_login(id: str, pwd: str):
 
 
 def put_fact(lol_name: str):
-    global global_rds_conn
     dir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 
     """
