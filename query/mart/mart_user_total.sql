@@ -16,7 +16,7 @@ UPDATE USERS.LOL_ACCOUNT B
          , SUM(IF(win, 0, 1)) as lose_count
          , COUNT(*) as total_count
          , AVG(IF(win, 1, 0)) as total_win_rate
-         , IF(AVG((kills + assists) / IF(deaths = 0, 1, deaths)) > 0, AVG((kills + assists) / IF(deaths = 0, 1, deaths)), 0) as total_kda
+         , (AVG(kills) + AVG(assists)) / IF(AVG(deaths) <> 0, AVG(deaths), 1) as total_kda
         FROM MATCHES.USERS_MATCH_HISTORY A
        WHERE A.lol_name = '{{ params.lol_name }}'
          AND A.queue_type = '420'
@@ -40,7 +40,7 @@ UPDATE USERS.LOL_ACCOUNT B
          , SUM(IF(win, 0, 1)) as lose_count
          , COUNT(*) as total_count
          , AVG(IF(win, 1, 0)) as total_win_rate
-         , IF(AVG((kills + assists) / IF(deaths = 0, 1, deaths)) > 0, AVG((kills + assists) / IF(deaths = 0, 1, deaths)), 0) as total_kda
+         , (AVG(kills) + AVG(assists)) / IF(AVG(deaths) <> 0, AVG(deaths), 1) as total_kda
         FROM MATCHES.USERS_MATCH_HISTORY A
        WHERE A.lol_name = '{{ params.lol_name }}'
          AND A.queue_type = '440'

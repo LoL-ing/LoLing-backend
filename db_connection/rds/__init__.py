@@ -38,12 +38,11 @@ def exec_sql_file(sql_file, p_lol_name=""):
             cursor: mysql.connector.connection.MySQLCursor = conn.cursor()
             for result in cursor.execute(sql, multi=True):
                 if result.with_rows:
-                    print("Rows produced by statement '{}':".format(result.statement))
-                    print(result.fetchall())
+                    result.fetchall()
                 else:
                     print(
-                        "Number of rows affected by statement '{}': {}".format(
-                            result.statement, result.rowcount
+                        "Number of rows affected by statement {}: {}".format(
+                            sql_file, result.rowcount
                         )
                     )
 
