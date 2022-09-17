@@ -58,8 +58,12 @@ logger = get_customized_logger()
 
 
 def post_lol_info(signin_id: str, lol_name: str):
-    global global_rds_conn
+    """
+    1. 첫 회원가입 시, lol_account 에 대한 정보 API call 하여 솔랭, 자유랭 나누어서 update
+    2. 최근 유저가 플레이 한 match_id 들을 MATCHES.USERS_MATCH_MAP 에 insert
+    """
 
+    global global_rds_conn
     # user 정보 DB INSERT
     # user_info 넣을 때, lol_name 만 insert 해두고 나머지를 update 할 지.. update 로 할 지? lock 때문에
     user_id_info = get_user_id(lol_name)
@@ -144,6 +148,9 @@ def post_lol_info(signin_id: str, lol_name: str):
 
 
 def get_user_id(lol_name: str):
+    """
+    lol_name 을 받아서 riot api 내의 고유 id, puuid 받음
+    """
     name = parse.quote(lol_name)
     url = "/".join([RIOT_API_URLS["GET_USER_ID"], name])
     params = {"api_key": api_key}
@@ -275,6 +282,7 @@ def get_match_info(match_id: str):
 
 
 def get_match_info_ods(lol_name: str):
+    """ """
     global global_rds_conn
 
     # ODS 데이터 수집 전, match id 최신화
@@ -345,6 +353,9 @@ def get_match_info_ods(lol_name: str):
 
 
 def get_login(id: str, pwd: str):
+    """
+    셀레니움 로그인
+    """
     user_os = "linux"
     current_os = platform.platform()
 
@@ -399,28 +410,28 @@ def get_login(id: str, pwd: str):
 
 
 def put_fact(lol_name: str):
+    """
+    한 유저에 대한 정보 갱신
+    """
     dir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 
-    """
-    1. fact 이전인 모든 ODS fact 처리
-    2. 모든 ODS 'Y' 상태로 update
-    3. 해당 lol_name 에 대해서 mart / lol_account 에 update 시키기
-    4. DB 가지고 있는 데이터 바탕으로 전체 승률, KDA update 
-    """
-
     logger.info(center_str_by_unciode_len(" users_match_history.sql ", 100, "-"))
-    # 1, 2
+
+    ####### fact #######
+    # 1. fact 이전인 모든 ODS fact 처리후 모든 ODS 'Y' 상태로 update
     exec_sql_file("/".join([dir, "query", "fact", "users_match_history.sql"]))
 
     logger.info(center_str_by_unciode_len(" update_lol_account_info.sql ", 100, "-"))
-    # 3
+
+    ####### mart #######
+    # 2. 해당 lol_name 에 대해서 mart / lol_account 에 update 시키기
     exec_sql_file(
         "/".join([dir, "query", "mart", "update_lol_account_info.sql"]),
         p_lol_name=lol_name,
     )
 
     logger.info(center_str_by_unciode_len(" mart_user_total.sql ", 100, "-"))
-    # 4
+    # 3. DB 가지고 있는 데이터 바탕으로 전체 승률, KDA update
     exec_sql_file(
         "/".join([dir, "query", "mart", "mart_user_total.sql"]),
         p_lol_name=lol_name,

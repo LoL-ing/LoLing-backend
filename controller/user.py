@@ -39,7 +39,7 @@ def get_user_info(user_id):
 
 async def sign_in(email: str, password: str):
     """ "
-    로그인
+    로그인 - 토큰 반환
     """
     is_exist = get_user_info(email)
     if is_exist:
@@ -142,6 +142,7 @@ def email_auth(email):
     return True
 
 
+# 컨트롤러 만든 사람들이 주석추가 할것 ~~~~
 def get_friends(lol_name: str):
 
     rds_conn = get_rds_db_connection()

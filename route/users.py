@@ -29,26 +29,28 @@ def route_register(argument: UserRegisterArgument):
     return JSONResponse(status_code=status_code, content=result)
 
 
-@router.get("/sign_in")
+@router.get("/sign_in", summary="로그인", description="로그인")
 async def route_sign_in(email: str, password: str):
     return await sign_in(email=email, password=password)
 
 
 ######## kakao 로그인 시도흔적 #########
-@router.get("/kakao_auth")
-def route_get_kakao_auth():
-    return get_kakao_auth()
+# @router.get("/kakao_auth")
+# def route_get_kakao_auth():
+#     return get_kakao_auth()
 
 
-@router.get("/callback")
-def route_get_token(request: Request):
-    code = request.query_params["code"]
-    return get_kakao_token(code)
+# @router.get("/callback")
+# def route_get_token(request: Request):
+#     code = request.query_params["code"]
+#     return get_kakao_token(code)
+
 
 @router.get("/freinds")
 def route_get_friends(lol_name: str):
-    return get_friends(lol_name = lol_name)
+    return get_friends(lol_name=lol_name)
+
 
 @router.get("/friend_profiles")
 def route_get_friend_profiles(lol_name: str):
-    return get_friend_profiles(lol_name = lol_name)
+    return get_friend_profiles(lol_name=lol_name)
