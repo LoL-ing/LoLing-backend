@@ -192,16 +192,16 @@ def get_friend_profiles_new(lol_name: str):
                 **data,
                 "champ_info": json.loads(data.get("champ_info"))
                 if data.get("champ_info") not in ["", None]
-                else [{}],
+                else [{}, {}, {}],
                 "line_info": json.loads(data.get("line_info"))
                 if data.get("line_info") not in ["", None]
-                else [{}],
+                else [{}, {}, {}],
                 "champ_info_sr": json.loads(data.get("champ_info_sr"))
                 if data.get("champ_info_sr") not in ["", None]
-                else [{}],
+                else [{}, {}, {}],
                 "line_info_sr": json.loads(data.get("line_info_sr"))
                 if data.get("line_info_sr") not in ["", None]
-                else [{}],
+                else [{}, {}, {}],
             },
             friend_profiles,
         )
@@ -219,26 +219,38 @@ def get_friend_profiles_new(lol_name: str):
                 "championImg": champion_img_base_url.format(
                     data.get("champ_info", [])[0].get("CHAMP_NAME")
                 ),
-                "winRate": str(round(data.get("total_win_rate", 0), 2))[-2:] + "%",
-                "winLose": str(round(data.get("total_win_rate", 0), 2))[-2:] + "%",
+                "winRate": str(
+                    round(
+                        data.get("total_win_rate")
+                        if data.get("total_win_rate") != None
+                        else 0,
+                        2,
+                    ),
+                )[-2:]
+                + "%",
+                "winLose": str(
+                    round(
+                        data.get("total_win_rate")
+                        if data.get("total_win_rate") != None
+                        else 0,
+                        2,
+                    ),
+                )[-2:]
+                + "%",
                 "lineImg_1": "../assets/images/diamond.png",
                 "lineImg_2": "../assets/images/diamond.png",
-                "line_winRate_1": str(
-                    round(data.get("line_info", [])[0].get("LINE_WIN_RATE", 0), 2)
-                )[-2:]
-                + "%",
-                "line_winRate_2": str(
-                    round(data.get("line_info", [])[1].get("LINE_WIN_RATE", 0), 2)
-                )[-2:]
-                + "%",
+                "line_winRate_1": "{0:.0f}%".format(
+                    round(data.get("line_info", [])[0].get("LINE_WIN_RATE", 0), 2) * 100
+                ),
+                "line_winRate_2": "{0:.0f}%".format(
+                    round(data.get("line_info", [])[1].get("LINE_WIN_RATE", 0), 2) * 100
+                ),
                 "line_kda_1": str(
-                    round(data.get("line_info", [])[0].get("LINE_KDA", 0), 2)
-                )[-2:]
-                + "%",
+                    round((data.get("line_info"))[0].get("LINE_KDA", 0), 2)
+                ),
                 "line_kda_2": str(
-                    round(data.get("line_info", [])[1].get("LINE_KDA", 0), 2)
-                )[-2:]
-                + "%",
+                    round((data.get("line_info"))[1].get("LINE_KDA", 0), 2)
+                ),
                 "championImg_1": champion_img_base_url.format(
                     data.get("champ_info", [])[0].get("CHAMP_NAME")
                 ),
@@ -248,30 +260,27 @@ def get_friend_profiles_new(lol_name: str):
                 "championImg_3": champion_img_base_url.format(
                     data.get("champ_info", [])[2].get("CHAMP_NAME")
                 ),
-                "champ_winRate_1": str(
+                "champ_winRate_1": "{0:.0f}%".format(
+                    round(data.get("champ_info", [])[0].get("CHAMP_WIN_RATE", 0), 2)
+                    * 100
+                ),
+                "champ_winRate_2": "{0:.0f}%".format(
                     round(data.get("champ_info", [])[1].get("CHAMP_WIN_RATE", 0), 2)
-                )[-2:]
-                + "%",
-                "champ_winRate_2": str(
-                    round(data.get("champ_info", [])[1].get("CHAMP_WIN_RATE", 0), 2)
-                )[-2:]
-                + "%",
-                "champ_winRate_3": str(
+                    * 100
+                ),
+                "champ_winRate_3": "{0:.0f}%".format(
                     round(data.get("champ_info", [])[2].get("CHAMP_WIN_RATE", 0), 2)
-                )[-2:]
-                + "%",
+                    * 100
+                ),
                 "champ_kda_1": str(
-                    round(data.get("champ_info", [])[0].get("CHAMP_KDA", 0), 2)
-                )[-2:]
-                + "%",
+                    round((data.get("champ_info"))[0].get("CHAMP_KDA", 0), 2)
+                ),
                 "champ_kda_2": str(
-                    round(data.get("champ_info", [])[1].get("CHAMP_KDA", 0), 2)
-                )[-2:]
-                + "%",
+                    round((data.get("champ_info"))[1].get("CHAMP_KDA", 0), 2)
+                ),
                 "champ_kda_3": str(
-                    round(data.get("champ_info", [])[2].get("CHAMP_KDA", 0), 2)
-                )[-2:]
-                + "%",
+                    round((data.get("champ_info"))[2].get("CHAMP_KDA", 0), 2)
+                ),
             },
             friend_profiles,
         )
