@@ -28,11 +28,9 @@ INSERT INTO USERS.USER (
 """
 
 GET_USER_LOL_ACCOUNT = """
-SELECT B.lol_name as lol_name
-  FROM USERS.USER A
-  LEFT OUTER JOIN USERS.USER_LOL_ACCOUNT_MAP B
-    ON A.signin_id = B.signin_id
- WHERE A.signin_id = %(email)s
+SELECT lol_name
+  FROM USERS.LOL_ACCOUNT
+ WHERE signin_id = %(email)s
 ;
 """
 
@@ -43,8 +41,18 @@ SELECT friend_lol_name
  ;
 """
 
-# GET_FRIEND_PROFILES + lol_name + 
+# GET_FRIEND_PROFILES + lol_name +
 # ';'
-# 1. 아까 한 것처럼 dict 
-# 2. %s 를 써서 array 
+# 1. 아까 한 것처럼 dict
+# 2. %s 를 써서 array
 # 3. string concat
+
+GET_FRIEND_PROFILES = """
+SELECT *
+  FROM USERS.LOL_ACCOUNT
+ WHERE 1=1
+"""
+
+GET_FRIEND_PROFILES_WHERE = """
+   AND lol_name in 
+"""

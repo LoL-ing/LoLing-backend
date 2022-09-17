@@ -31,24 +31,6 @@ INSERT INTO USERS.LOL_ACCOUNT (
 ;
 """
 
-DELETE_USER_LOL_ACCOUNT_MAP = """
-DELETE FROM USERS.USER_LOL_ACCOUNT_MAP
- WHERE lol_name = %(lol_name)s
-   AND signin_id = %(signin_id)s
-;
-"""
-
-INSERT_USER_LOL_ACCOUNT_MAP = """
-INSERT INTO USERS.USER_LOL_ACCOUNT_MAP (
-       signin_id
-     , lol_name
-) VALUES (
-       %(signin_id)s
-     , %(lol_name)s
-)
-;
-"""
-
 
 DELETE_USERS_MATCH_MAP = """
 DELETE FROM MATCHES.USERS_MATCH_MAP

@@ -2,6 +2,7 @@ from ipaddress import summarize_address_range
 from fastapi import APIRouter, Depends, Path, Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
+from auth.jwt import auth_required
 from model.user.request import UserRegisterArgument
 
 from controller.user import *
@@ -51,6 +52,14 @@ def route_get_friends(lol_name: str):
     return get_friends(lol_name=lol_name)
 
 
-@router.get("/friend_profiles")
+# 희웅이랑 채영이가 만들던 거
+@router.get("/friends_profiles")
 def route_get_friend_profiles(lol_name: str):
     return get_friend_profiles(lol_name=lol_name)
+
+
+# DB 테이블 삭제해서, 프론트에서 에러나길래 잠시 만들어 둔 거 (김민규)
+@router.get("/friends/profiles")
+def route_get_friend_profiles(user_info: dict = Depends(auth_required)):
+    lol_name = user_info.get("lol_name", "")
+    return get_friend_profiles_new(lol_name=lol_name)

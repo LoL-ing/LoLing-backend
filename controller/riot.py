@@ -33,8 +33,6 @@ from query.riot import (
     DELETE_LOL_ACCOUNT,
     INSERT_LOL_ACCOUNT,
     INSERT_MATCH_INFO_ODS,
-    INSERT_USER_LOL_ACCOUNT_MAP,
-    DELETE_USER_LOL_ACCOUNT_MAP,
     DELETE_USERS_MATCH_MAP,
     INSERT_USERS_MATCH_MAP,
     SELECT_MATCH_ID_INFO_N,
@@ -424,7 +422,17 @@ def put_fact(lol_name: str):
     logger.info(center_str_by_unciode_len(" update_lol_account_info.sql ", 100, "-"))
 
     ####### mart #######
-    # 2. 해당 lol_name 에 대해서 mart / lol_account 에 update 시키기
+    # 2. 해당 lol_name에 대해서 champion과 line의 mart table update
+    exec_sql_file(
+        "/".join([dir, "query", "mart", "mart_user_champ.sql"]),
+        p_lol_name=lol_name,
+    )
+    exec_sql_file(
+        "/".join([dir, "query", "mart", "mart_user_line.sql"]),
+        p_lol_name=lol_name,
+    )
+
+    # 3. 해당 lol_name 에 대해서 2번에서 update한 mart table로부터 lol_account 에 update 시키기
     exec_sql_file(
         "/".join([dir, "query", "mart", "update_lol_account_info.sql"]),
         p_lol_name=lol_name,
