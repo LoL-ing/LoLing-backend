@@ -177,6 +177,7 @@ def get_friend_profiles_new(lol_name: str):
     rds_conn = get_rds_db_connection()
     # champion_table = get_all_champions()
     champion_img_base_url = "https://opgg-static.akamaized.net/meta/images/lol/1205/champion/{0}.png?image=q_auto,f_webp,w_164&v=1646382437273"
+    line_img_base_url = ""
     friends = get_friends(lol_name)
 
     select_query = (
@@ -237,8 +238,8 @@ def get_friend_profiles_new(lol_name: str):
                     ),
                 )[-2:]
                 + "%",
-                "lineImg_1": "../assets/images/diamond.png",
-                "lineImg_2": "../assets/images/diamond.png",
+                "lineImg_1": data.get("line_info", [])[0].get("LINE_NAME"),
+                "lineImg_2": data.get("line_info", [])[1].get("LINE_NAME"),
                 "line_winRate_1": "{0:.0f}%".format(
                     round(data.get("line_info", [])[0].get("LINE_WIN_RATE", 0), 2) * 100
                 ),
