@@ -43,6 +43,7 @@ from query.riot import (
 
 load_dotenv()
 api_key = os.environ.get("RIOT_API_KEY")
+dir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 
 season_start_date = str(
     time.mktime(
@@ -350,6 +351,68 @@ def get_match_info_ods(lol_name: str):
     return str(tuple(list(map(lambda data: data.get("match_id"), ret))))
 
 
+def fact_all():
+    ####### fact #######
+    # 1. fact 이전인 모든 ODS fact 처리후 모든 ODS 'Y' 상태로 update
+    exec_sql_file("/".join([dir, "query", "fact", "users_match_history.sql"]))
+
+
+def mart_by_user(lol_name: str):
+    ####### mart #######
+    # 2. 해당 lol_name에 대해서 champion과 line의 mart table update
+    exec_sql_file(
+        "/".join([dir, "query", "mart", "mart_user_champ.sql"]),
+        p_lol_name=lol_name,
+    )
+    exec_sql_file(
+        "/".join([dir, "query", "mart", "mart_user_line.sql"]),
+        p_lol_name=lol_name,
+    )
+
+    # 3. 해당 lol_name 에 대해서 2번에서 update한 mart table로부터 lol_account 에 update 시키기
+    exec_sql_file(
+        "/".join([dir, "query", "mart", "update_lol_account_info.sql"]),
+        p_lol_name=lol_name,
+    )
+
+    # 3. DB 가지고 있는 데이터 바탕으로 전체 승률, KDA update
+    exec_sql_file(
+        "/".join([dir, "query", "mart", "mart_user_total.sql"]),
+        p_lol_name=lol_name,
+    )
+
+
+def put_history_by_user(lol_name: str):
+    """
+    한 유저에 대한 정보 갱신
+    """
+    ####### fact #######
+    # 1. fact 이전인 모든 ODS fact 처리후 모든 ODS 'Y' 상태로 update
+    fact_all()
+
+    ####### mart #######
+    # 2. 해당 lol_name에 대해서 champion과 line의 mart table update
+    # 3. 해당 lol_name 에 대해서 2번에서 update한 mart table로부터 lol_account 에 update 시키기
+    # 3. DB 가지고 있는 데이터 바탕으로 전체 승률, KDA update
+    mart_by_user(lol_name)
+
+    return JSONResponse(
+        status_code=200, content=dict(msg=f"ODS 전체 FACT / {lol_name} MART 정보 update 성공")
+    )
+
+
+def post_ods_fact_mart_all():
+    """
+    모든 lol_name 에 대해서
+    1. ODS (유저별)
+    2. FACT (한 번에)
+    3. MART (유저별)
+    시행
+    -> DB 데이터 갱신
+    """
+    pass
+
+
 def get_login(id: str, pwd: str):
     """
     셀레니움 로그인
@@ -405,46 +468,3 @@ def get_login(id: str, pwd: str):
         return JSONResponse(status_code=200, content=dict(msg="셀레니움 로그인 성공"))
     else:
         return JSONResponse(status_code=404, content=dict(msg="셀레니움 로그인 실패"))
-
-
-def put_fact(lol_name: str):
-    """
-    한 유저에 대한 정보 갱신
-    """
-    dir = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
-
-    logger.info(center_str_by_unciode_len(" users_match_history.sql ", 100, "-"))
-
-    ####### fact #######
-    # 1. fact 이전인 모든 ODS fact 처리후 모든 ODS 'Y' 상태로 update
-    exec_sql_file("/".join([dir, "query", "fact", "users_match_history.sql"]))
-
-    logger.info(center_str_by_unciode_len(" update_lol_account_info.sql ", 100, "-"))
-
-    ####### mart #######
-    # 2. 해당 lol_name에 대해서 champion과 line의 mart table update
-    exec_sql_file(
-        "/".join([dir, "query", "mart", "mart_user_champ.sql"]),
-        p_lol_name=lol_name,
-    )
-    exec_sql_file(
-        "/".join([dir, "query", "mart", "mart_user_line.sql"]),
-        p_lol_name=lol_name,
-    )
-
-    # 3. 해당 lol_name 에 대해서 2번에서 update한 mart table로부터 lol_account 에 update 시키기
-    exec_sql_file(
-        "/".join([dir, "query", "mart", "update_lol_account_info.sql"]),
-        p_lol_name=lol_name,
-    )
-
-    logger.info(center_str_by_unciode_len(" mart_user_total.sql ", 100, "-"))
-    # 3. DB 가지고 있는 데이터 바탕으로 전체 승률, KDA update
-    exec_sql_file(
-        "/".join([dir, "query", "mart", "mart_user_total.sql"]),
-        p_lol_name=lol_name,
-    )
-
-    return JSONResponse(
-        status_code=200, content=dict(msg=f"ODS 전체 FACT / {lol_name} MART 정보 update 성공")
-    )

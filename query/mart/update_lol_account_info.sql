@@ -76,22 +76,3 @@ UPDATE USERS.LOL_ACCOUNT A
                       )
  WHERE A.lol_name = '{{ params.lol_name }}'
 ;
-
-
-
--- # ################################################################################################################
--- SELECT CONCAT('[', GROUP_CONCAT(
---                     JSON_OBJECT(
---                     'QUEUE_TYPE', A.QUEUE_TYPE,
---                     'CHAMP_NAME', A.CHAMP_NAME,
---                     'CHAMP_COUNT', A.CHAMP_COUNT,
---                     'CHAMP_WIN_RATE', A.CHAMP_WIN_RATE,
---                     'CHAMP_KDA', A.CHAMP_KDA
---                                )
---                 )
---                                   , ']')
---   FROM (SELECT *
---           FROM MATCHES.MART_USERS_CHAMP
---          WHERE LOL_NAME = '고려대 김자헌'
---            AND QUEUE_TYPE = '420'
---          ORDER BY CHAMP_COUNT desc) A;

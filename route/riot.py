@@ -8,7 +8,7 @@ router = APIRouter()
 
 
 @router.post(
-    "/lol_info",
+    "/init",
     summary="lol_account 정보 update",
     description="자랭 솔랭 구분하여 win, loss, tier, match_id DB insert",
 )
@@ -17,7 +17,7 @@ def route_post_lol_info(signin_id: str, lol_name: str):
 
 
 @router.post(
-    "/match-info/ods",
+    "/ods",
     summary="match_id 들로 실제 match 정보 DB insert",
     description="MATCHES.USERS_MATCH_MAP 에서 아직 매치 정보 수집하지 않은 match_id 들만 불러와서, match 정보 DB(MATCHES.MATCHES_ODS) insert",
 )
@@ -25,13 +25,19 @@ def route_get_match_info(lol_name: str):
     return get_match_info_ods(lol_name=lol_name)
 
 
-@router.post(
-    "/match-info/fact-mart",
+@router.put(
+    "/history/by-user",
     summary="ODS -> 한 매치의 유저별 정보를 추출 / 추출한 data 바탕으로 축약 데이터 통계",
     description="MATCHES.USERS_MATCH_MAP -> (fact query) MATCHES.USERS_MATCH_HISTORY -> (mart query) USERS.LOL_ACCOUNT",
 )
-def route_put_fact(lol_name: str):
-    return put_fact(lol_name=lol_name)
+def route_put_history_by_user(lol_name: str):
+    return put_history_by_user(lol_name=lol_name)
+
+
+# TODO 전체 유저 전적 갱신 만들기
+@router.post("/history/all")
+def route_put_history_all():
+    pass
 
 
 @router.post(

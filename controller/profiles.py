@@ -38,13 +38,15 @@ def get_lol_account(user_id: str, flag=True, user_num=0):
             content=dict(msg="id 에 해당하는 lol_account 를 찾지 못함"),
         )
 
-    champ_info = json.loads(
-        lol_account.get("CHAMP_INFO")
+    champ_info = (
+        json.loads(lol_account.get("CHAMP_INFO"))
         if lol_account.get("CHAMP_INFO") != None
-        else "[{}]"
+        else [{} for _ in range(3)]
     )
-    line_info = json.loads(
-        lol_account.get("LINE_INFO") if lol_account.get("LINE_INFO") != None else "[{}]"
+    line_info = (
+        json.loads(lol_account.get("LINE_INFO"))
+        if lol_account.get("LINE_INFO") != None
+        else [{} for _ in range(3)]
     )
 
     sample_data = {
@@ -72,16 +74,16 @@ def get_profile(lol_name: str):
                 **data,
                 "champ_info": json.loads(data.get("champ_info"))
                 if data.get("champ_info") not in ["", None]
-                else [{}],
+                else [{} for _ in range(3)],
                 "line_info": json.loads(data.get("line_info"))
                 if data.get("line_info") not in ["", None]
-                else [{}],
+                else [{} for _ in range(3)],
                 "champ_info_sr": json.loads(data.get("champ_info_sr"))
                 if data.get("champ_info_sr") not in ["", None]
-                else [{}],
+                else [{} for _ in range(3)],
                 "line_info_sr": json.loads(data.get("line_info_sr"))
                 if data.get("line_info_sr") not in ["", None]
-                else [{}],
+                else [{} for _ in range(3)],
             },
             lol_account,
         )

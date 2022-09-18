@@ -175,15 +175,16 @@ def get_friend_profiles(lol_name: str):
 
 def get_friend_profiles_new(lol_name: str):
     rds_conn = get_rds_db_connection()
-    # champion_table = get_all_champions()
-    champion_img_base_url = "https://opgg-static.akamaized.net/meta/images/lol/1205/champion/{0}.png?image=q_auto,f_webp,w_164&v=1646382437273"
-    line_img_base_url = ""
+    CHAMPION_IMG_BASE_URL = "https://opgg-static.akamaized.net/meta/images/lol/1205/champion/{0}.png?image=q_auto,f_webp,w_164&v=1646382437273"
     friends = get_friends(lol_name)
 
     select_query = (
         query.GET_FRIEND_PROFILES
         + query.GET_FRIEND_PROFILES_WHERE
-        + str(tuple(list(map(lambda data: data.get("friend_lol_name"), friends))))
+        + str(
+            tuple(list(map(lambda data: data.get("friend_lol_name"), friends)))
+        ).replace(",)", ")")
+        + ";"
     )
 
     friend_profiles = exec_query(rds_conn, select_query)
@@ -193,16 +194,16 @@ def get_friend_profiles_new(lol_name: str):
                 **data,
                 "champ_info": json.loads(data.get("champ_info"))
                 if data.get("champ_info") not in ["", None]
-                else [{}, {}, {}],
+                else [{} for _ in range(3)],
                 "line_info": json.loads(data.get("line_info"))
                 if data.get("line_info") not in ["", None]
-                else [{}, {}, {}],
+                else [{} for _ in range(3)],
                 "champ_info_sr": json.loads(data.get("champ_info_sr"))
                 if data.get("champ_info_sr") not in ["", None]
-                else [{}, {}, {}],
+                else [{} for _ in range(3)],
                 "line_info_sr": json.loads(data.get("line_info_sr"))
                 if data.get("line_info_sr") not in ["", None]
-                else [{}, {}, {}],
+                else [{} for _ in range(3)],
             },
             friend_profiles,
         )
@@ -212,12 +213,12 @@ def get_friend_profiles_new(lol_name: str):
         map(
             lambda data: {
                 "nickname": data.get("lol_name"),
-                "profileImg": champion_img_base_url.format(
+                "profileImg": CHAMPION_IMG_BASE_URL.format(
                     data.get("champ_info", [])[0].get("CHAMP_NAME")
                 ),
                 "line": data.get("line_info", [])[0].get("LINE_NAME"),
                 "mannerTierImg": "../assets/images/diamond.png",
-                "championImg": champion_img_base_url.format(
+                "championImg": CHAMPION_IMG_BASE_URL.format(
                     data.get("champ_info", [])[0].get("CHAMP_NAME")
                 ),
                 "winRate": str(
@@ -252,13 +253,13 @@ def get_friend_profiles_new(lol_name: str):
                 "line_kda_2": str(
                     round((data.get("line_info"))[1].get("LINE_KDA", 0), 2)
                 ),
-                "championImg_1": champion_img_base_url.format(
+                "championImg_1": CHAMPION_IMG_BASE_URL.format(
                     data.get("champ_info", [])[0].get("CHAMP_NAME")
                 ),
-                "championImg_2": champion_img_base_url.format(
+                "championImg_2": CHAMPION_IMG_BASE_URL.format(
                     data.get("champ_info", [])[1].get("CHAMP_NAME")
                 ),
-                "championImg_3": champion_img_base_url.format(
+                "championImg_3": CHAMPION_IMG_BASE_URL.format(
                     data.get("champ_info", [])[2].get("CHAMP_NAME")
                 ),
                 "champ_winRate_1": "{0:.0f}%".format(

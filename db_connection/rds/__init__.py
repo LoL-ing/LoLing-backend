@@ -4,6 +4,9 @@ from os import environ
 import logging
 from exception import LOLINGDBRequestFailException
 from dotenv.main import load_dotenv
+from util import get_customized_logger, center_str_by_unciode_len
+
+logger = get_customized_logger()
 
 
 def get_rds_db_connection() -> mysql.connector.connection.MySQLConnection:
@@ -16,7 +19,7 @@ def get_rds_db_connection() -> mysql.connector.connection.MySQLConnection:
             "port": environ.get("RDS_PORT"),
             "database": environ.get("RDS_DB_NAME"),
         },
-        autocommit=True
+        autocommit=True,
     )
 
     return conn
@@ -40,6 +43,7 @@ def exec_sql_file(sql_file, p_lol_name=""):
                 if result.with_rows:
                     result.fetchall()
                 else:
+                    logger.info(center_str_by_unciode_len(f" {sql_file} ", 100, "-"))
                     print(
                         "Number of rows affected by statement {}: {}".format(
                             sql_file, result.rowcount
