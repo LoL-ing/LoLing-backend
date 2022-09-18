@@ -125,6 +125,37 @@ def center_str_by_unciode_len(
 
 def get_customized_logger():
 
+    # TODO 레벨 별로 로깅 핸들러 분리 / 슬랙 핸들러 만들어서 오류 수집
+    #     import logging
+    #     import logging.config
+
+    #     config = {
+    #     "version": 1,
+    #     "formatters": {
+    #         "simple": {"format": "[%(name)s] %(message)s"},
+    #         "complex": {
+    #             "format": "%(asctime)s %(levelname)s [%(name)s] [%(filename)s:%(lineno)d] - %(message)s"
+    #         },
+    #     },
+    #     "handlers": {
+    #         "console": {
+    #             "class": "logging.StreamHandler",
+    #             "formatter": "simple",
+    #             "level": "DEBUG",
+    #         },
+    #         "file": {
+    #             "class": "logging.FileHandler",
+    #             "filename": "error.log",
+    #             "formatter": "complex",
+    #             "level": "ERROR",
+    #         },
+    #     },
+    #     "root": {"handlers": ["console", "file"], "level": "WARNING"},
+    #     "loggers": {"parent": {"level": "INFO"}, "parent.child": {"level": "DEBUG"},},
+    # }
+
+    #     logging.config.dictConfig(config)
+
     # 로그 생성
     logger = logging.getLogger()
 

@@ -1,3 +1,5 @@
+import json
+from controller.champions import get_all_champions
 from db_connection import rds
 from db_connection.rds import (
     close_rds_db_connection,
@@ -39,7 +41,7 @@ def get_user_info(user_id):
 
 async def sign_in(email: str, password: str):
     """ "
-    로그인
+    로그인 - 토큰 반환
     """
     is_exist = get_user_info(email)
     if is_exist:
@@ -142,6 +144,7 @@ def email_auth(email):
     return True
 
 
+# 컨트롤러 만든 사람들이 주석추가 할것 ~~~~
 def get_friends(lol_name: str):
 
     rds_conn = get_rds_db_connection()
@@ -168,3 +171,119 @@ def get_friend_profiles(lol_name: str):
     # friend_profiles= exec_query(rds_conn, query.GET_FRIEND_PROFILES, input_params= where_arg)
 
     return friend_profiles
+
+
+def get_friend_profiles_new(lol_name: str):
+    rds_conn = get_rds_db_connection()
+    # champion_table = get_all_champions()
+    champion_img_base_url = "https://opgg-static.akamaized.net/meta/images/lol/1205/champion/{0}.png?image=q_auto,f_webp,w_164&v=1646382437273"
+    friends = get_friends(lol_name)
+
+    select_query = (
+        query.GET_FRIEND_PROFILES
+        + query.GET_FRIEND_PROFILES_WHERE
+        + str(tuple(list(map(lambda data: data.get("friend_lol_name"), friends))))
+    )
+
+    friend_profiles = exec_query(rds_conn, select_query)
+    friend_profiles = list(
+        map(
+            lambda data: {
+                **data,
+                "champ_info": json.loads(data.get("champ_info"))
+                if data.get("champ_info") not in ["", None]
+                else [{}, {}, {}],
+                "line_info": json.loads(data.get("line_info"))
+                if data.get("line_info") not in ["", None]
+                else [{}, {}, {}],
+                "champ_info_sr": json.loads(data.get("champ_info_sr"))
+                if data.get("champ_info_sr") not in ["", None]
+                else [{}, {}, {}],
+                "line_info_sr": json.loads(data.get("line_info_sr"))
+                if data.get("line_info_sr") not in ["", None]
+                else [{}, {}, {}],
+            },
+            friend_profiles,
+        )
+    )
+
+    sample_data = list(
+        map(
+            lambda data: {
+                "nickname": data.get("lol_name"),
+                "profileImg": champion_img_base_url.format(
+                    data.get("champ_info", [])[0].get("CHAMP_NAME")
+                ),
+                "line": data.get("line_info", [])[0].get("LINE_NAME"),
+                "mannerTierImg": "../assets/images/diamond.png",
+                "championImg": champion_img_base_url.format(
+                    data.get("champ_info", [])[0].get("CHAMP_NAME")
+                ),
+                "winRate": str(
+                    round(
+                        data.get("total_win_rate")
+                        if data.get("total_win_rate") != None
+                        else 0,
+                        2,
+                    ),
+                )[-2:]
+                + "%",
+                "winLose": str(
+                    round(
+                        data.get("total_win_rate")
+                        if data.get("total_win_rate") != None
+                        else 0,
+                        2,
+                    ),
+                )[-2:]
+                + "%",
+                "lineImg_1": "../assets/images/diamond.png",
+                "lineImg_2": "../assets/images/diamond.png",
+                "line_winRate_1": "{0:.0f}%".format(
+                    round(data.get("line_info", [])[0].get("LINE_WIN_RATE", 0), 2) * 100
+                ),
+                "line_winRate_2": "{0:.0f}%".format(
+                    round(data.get("line_info", [])[1].get("LINE_WIN_RATE", 0), 2) * 100
+                ),
+                "line_kda_1": str(
+                    round((data.get("line_info"))[0].get("LINE_KDA", 0), 2)
+                ),
+                "line_kda_2": str(
+                    round((data.get("line_info"))[1].get("LINE_KDA", 0), 2)
+                ),
+                "championImg_1": champion_img_base_url.format(
+                    data.get("champ_info", [])[0].get("CHAMP_NAME")
+                ),
+                "championImg_2": champion_img_base_url.format(
+                    data.get("champ_info", [])[1].get("CHAMP_NAME")
+                ),
+                "championImg_3": champion_img_base_url.format(
+                    data.get("champ_info", [])[2].get("CHAMP_NAME")
+                ),
+                "champ_winRate_1": "{0:.0f}%".format(
+                    round(data.get("champ_info", [])[0].get("CHAMP_WIN_RATE", 0), 2)
+                    * 100
+                ),
+                "champ_winRate_2": "{0:.0f}%".format(
+                    round(data.get("champ_info", [])[1].get("CHAMP_WIN_RATE", 0), 2)
+                    * 100
+                ),
+                "champ_winRate_3": "{0:.0f}%".format(
+                    round(data.get("champ_info", [])[2].get("CHAMP_WIN_RATE", 0), 2)
+                    * 100
+                ),
+                "champ_kda_1": str(
+                    round((data.get("champ_info"))[0].get("CHAMP_KDA", 0), 2)
+                ),
+                "champ_kda_2": str(
+                    round((data.get("champ_info"))[1].get("CHAMP_KDA", 0), 2)
+                ),
+                "champ_kda_3": str(
+                    round((data.get("champ_info"))[2].get("CHAMP_KDA", 0), 2)
+                ),
+            },
+            friend_profiles,
+        )
+    )
+
+    return sample_data
