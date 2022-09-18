@@ -1,6 +1,7 @@
 from db_connection.mongo import get_db_connection
 from db_connection.rds import get_rds_db_connection, exec_query
 from fastapi import APIRouter, Depends
+from operator import itemgetter
 import json
 
 from query.profiles import (
@@ -149,7 +150,10 @@ def get_profile(lol_name: str):
             lol_account,
         )
     )
-
+    # champ 와 line info를 별개로 가져오며 orderby 를 하게 되면 DB 3
+    #번 찍러야 하는 문제 발생 
+    # 
     # dict 형식으로 바꿔준건가? ㅇㅇ 그런거지
+    #lol_account.champ_info.sort(key=itemgetter(4),reverse=True)
 
     return {**lol_account[0]}
