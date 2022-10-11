@@ -1,12 +1,13 @@
 from ipaddress import summarize_address_range
+from typing import List
 from fastapi import APIRouter, Depends, Path, Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from auth.jwt import auth_required
 from model.user.request import UserRegisterArgument
-
 from controller.user import *
 from controller.kakaouser import *
+
 
 router = APIRouter()
 
@@ -63,3 +64,8 @@ def route_get_friend_profiles(lol_name: str):
 def route_get_friend_profiles(user_info: dict = Depends(auth_required)):
     lol_name = user_info.get("lol_name", "")
     return get_friend_profiles_new(lol_name=lol_name)
+
+
+@router.post("/email/send")
+async def route_post_email_verifyication(email: EmailSchema) -> JSONResponse:
+    return await post_email_verification(email)

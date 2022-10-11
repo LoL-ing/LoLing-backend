@@ -1,4 +1,7 @@
 import json
+from pathlib import Path
+from typing import Any, Dict, List
+
 from controller.champions import get_all_champions
 from db_connection import rds
 from db_connection.rds import (
@@ -19,6 +22,10 @@ from exception import LOLINGDBRequestFailException
 from starlette.status import *
 from query import user as query
 from controller import profiles as profile
+
+from pydantic import EmailStr, BaseModel
+from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
+
 
 load_dotenv()
 secret_key = os.environ.get("SECRET_KEY")
@@ -289,3 +296,34 @@ def get_friend_profiles_new(lol_name: str):
     )
 
     return sample_data
+
+
+class EmailSchema(BaseModel):
+    email: List[EmailStr]
+    body: Dict[str, Any]
+
+
+async def post_email_verification(email: EmailSchema) -> JSONResponse:
+    conf = ConnectionConfig(
+        MAIL_USERNAME=os.environ.get("MAIL_USERNAME"),
+        MAIL_PASSWORD=os.environ.get("MAIL_PASSWORD"),
+        MAIL_FROM=os.environ.get("MAIL_FROM"),
+        MAIL_PORT=587,
+        MAIL_SERVER="smtp.naver.com",
+        MAIL_FROM_NAME=os.environ.get("MAIL_FROM_NAME"),
+        MAIL_TLS=True,
+        MAIL_SSL=False,
+        USE_CREDENTIALS=True,
+        VALIDATE_CERTS=True,
+        TEMPLATE_FOLDER=Path(__file__).parent.parent / "templates",
+    )
+
+    message = MessageSchema(
+        subject="Fastapi-Mail module",
+        recipients=email.dict().get("email"),
+        template_body=email.dict().get("body"),
+    )
+
+    fm = FastMail(conf)
+    await fm.send_message(message, template_name="email_verification_template.html")
+    return JSONResponse(status_code=200, content={"message": "email has been sent"})
