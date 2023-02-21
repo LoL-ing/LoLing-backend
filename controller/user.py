@@ -14,9 +14,9 @@ from dotenv.main import load_dotenv
 import os
 import bcrypt
 import jwt
-from model.user.request import UserRegisterArgument
+from schemas.user.request import UserRegisterArgument
 from starlette.responses import JSONResponse
-from model import ApiResponseCode
+from schemas import ApiResponseCode
 from mysql.connector.errors import Error as mysqlError
 from exception import LOLINGDBRequestFailException
 from starlette.status import *
@@ -109,8 +109,8 @@ def register(argument: UserRegisterArgument):
     try:
         rds_conn = get_rds_db_connection()
         user_data = {
-            "email": argument.get("email"),
-            "password": argument.get("password"),
+            "email": argument.email,
+            "password": argument.password,
         }
 
         print("############### user_info 생성 ###############")
@@ -319,7 +319,7 @@ async def post_email_verification(email: EmailSchema) -> JSONResponse:
     )
 
     message = MessageSchema(
-        subject="Fastapi-Mail module",
+        subject="LoLing Verification Mail",
         recipients=email.dict().get("email"),
         template_body=email.dict().get("body"),
     )

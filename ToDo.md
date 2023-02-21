@@ -1,3 +1,6 @@
+# 2023-02-15 
+[] DB schema 구분해서 table dto 생성하기
+   - (공식문서)[https://docs.sqlalchemy.org/en/20/changelog/migration_11.html#multi-tenancy-schema-translation-for-table-objects]
 # 2022-07-02 토
 
 ## 한 일

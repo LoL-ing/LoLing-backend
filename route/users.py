@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Path, Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from auth.jwt import auth_required
-from model.user.request import UserRegisterArgument
+from schemas.user.request import UserRegisterArgument
 from controller.user import *
 from controller.kakaouser import *
 
@@ -26,7 +26,7 @@ def route_email_auth(email: str):
 
 @router.post("/register", summary="회원가입", description="회원가입 정보 post")
 def route_register(argument: UserRegisterArgument):
-    status_code, result = register(jsonable_encoder(argument))
+    status_code, result = register(argument)
 
     return JSONResponse(status_code=status_code, content=result)
 

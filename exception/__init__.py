@@ -1,5 +1,5 @@
 from mysql.connector.errors import Error as mysqlError
-from model import ApiResponseCode
+from schemas import ApiResponseCode
 
 # LOLING DB 요청 실패
 class LOLINGDBRequestFailException(Exception):
