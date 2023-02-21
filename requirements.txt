@@ -21,3 +21,5 @@ requests
 bcrypt
 PyJWT
 fastapi-mail
+sqlalchemy
+selenium

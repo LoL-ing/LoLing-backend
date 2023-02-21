@@ -1,3 +1,4 @@
+from pydantic import BaseModel, Field
 from fastapi import Depends, FastAPI, Request
 from requests import Session
 from sqlalchemy import select
@@ -9,7 +10,8 @@ from fastapi.encoders import jsonable_encoder
 from os import environ
 from exception import *
 from models import Base
-from models.user_models import User
+# DB 생성 전 import 하여 불러오기
+import models
 
 app = FastAPI()
 load_dotenv()
@@ -22,8 +24,6 @@ app.include_router(champions.router, prefix="/champions", tags=["챔피언"])
 app.include_router(profiles.router, prefix="/profiles", tags=["프로필"])
 app.include_router(users.router, prefix="/users", tags=["유저 등록 및 로그인"])
 app.include_router(riot.router, prefix="/riot", tags=["라이엇 API 테스트"])
-
-from pydantic import BaseModel, Field
 
 
 class UserRegisterArgument(BaseModel):

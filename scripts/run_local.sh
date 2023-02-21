@@ -1,4 +1,7 @@
-### 맨 처음 실행 전, 권한 주기 ############
+# TODO: python 미설치자 지원
+
+####### 맨 처음 실행 전, 권한 주기 #######
+###### 윈도우는 필요 없을지도... #########
 # chmod 700 ./scripts/run_local.sh
 #####################################
 
@@ -10,8 +13,18 @@ sudo kill -9 $PID
 sleep 1
 fi
 
+# 가상환경 없다면 생성
+if (ls | grep venv)
+then
+echo "venv exists"
+else
+python3 -m venv venv
+echo "venv created"
+sleep 1
+fi
+
 # 가상환경 열기
-. venv/bin/activate || . venv/Scripts/activate
+(. venv/Scripts/activate) || (. venv/bin/activate)
 
 # 의존성 설치
 pip install -r requirements.txt
