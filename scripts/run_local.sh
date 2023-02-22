@@ -23,6 +23,7 @@ echo "venv created"
 sleep 1
 fi
 
+cd app
 # 가상환경 열기
 (. venv/Scripts/activate) || (. venv/bin/activate)
 
@@ -30,4 +31,4 @@ fi
 pip install -r requirements.txt
 
 # 로컬 서버 실행
-uvicorn main:app --port 8000 --reload
+uvicorn app.main:app --port 8000 --reload
