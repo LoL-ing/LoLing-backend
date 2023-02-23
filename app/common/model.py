@@ -12,7 +12,7 @@ from app.database import Base
 
 
 class BaseIdModel(Base):
-    id = Column(Integer, nullable=False, primary_key=True)
+    id = Column(Integer, autoincrement=True, nullable=False, primary_key=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
@@ -24,7 +24,7 @@ class BaseIdModel(Base):
 
 class Champions(BaseIdModel):
     __tablename__ = "CHAMPIONS"
-    __table_args__ = {"schema": "CONSTANT"}
+    __table_args__ = {"schema": "COMMON"}
     name_en = Column(
         String(20), nullable=False, unique=True, comment="champion의 영어 이름이다."
     )
@@ -41,7 +41,7 @@ class Champions(BaseIdModel):
 
 class Items(BaseIdModel):
     __tablename__ = "ITEMS"
-    __table_args__ = {"schema": "CONSTANT"}
+    __table_args__ = {"schema": "COMMON"}
     name = Column(String(50), nullable=False, comment="item 의 이름이다.")
     image_url = Column(
         String(2083), nullable=True, comment="champion 에 해당하는 image 의 url 값이다."
@@ -50,7 +50,7 @@ class Items(BaseIdModel):
 
 class Lines(BaseIdModel):
     __tablename__ = "LINES"
-    __table_args__ = {"schema": "CONSTANT"}
+    __table_args__ = {"schema": "COMMON"}
     name = Column(String(10), nullable=False, unique=True, comment="line 의 이름이다.")
     image_url = Column(
         String(2083), nullable=True, comment="line 에 해당하는 image 의 url 값이다."
@@ -59,7 +59,7 @@ class Lines(BaseIdModel):
 
 class Profile_icons(BaseIdModel):
     __tablename__ = "PROFILE_ICONS"
-    __table_args__ = {"schema": "CONSTANT"}
+    __table_args__ = {"schema": "COMMON"}
     image_url = Column(
         String(2083), nullable=True, comment="profile_icon 에 해당하는 image 의 url 값이다."
     )
@@ -67,7 +67,7 @@ class Profile_icons(BaseIdModel):
 
 class Queues(BaseIdModel):
     __tablename__ = "QUEUES"
-    __table_args__ = {"schema": "CONSTANT"}
+    __table_args__ = {"schema": "COMMON"}
     type = Column(
         String(30),
         nullable=False,
@@ -78,7 +78,7 @@ class Queues(BaseIdModel):
 
 class Runes(BaseIdModel):
     __tablename__ = "RUNES"
-    __table_args__ = {"schema": "CONSTANT"}
+    __table_args__ = {"schema": "COMMON"}
     name = Column(String(20), nullable=False, unique=True, comment="rune 의 이름이다.")
     image_url = Column(
         String(2083), nullable=True, comment="rune 에 해당하는 image 의 url 값이다."
@@ -87,7 +87,7 @@ class Runes(BaseIdModel):
 
 class Schools(BaseIdModel):
     __tablename__ = "SCHOOLS"
-    __table_args__ = {"schema": "CONSTANT"}
+    __table_args__ = {"schema": "COMMON"}
     name = Column(
         String(25),
         nullable=False,
@@ -103,7 +103,7 @@ class Schools(BaseIdModel):
 
 class Tiers(BaseIdModel):
     __tablename__ = "TIERS"
-    __table_args__ = {"schema": "CONSTANT"}
+    __table_args__ = {"schema": "COMMON"}
     name = Column(String(20), nullable=False, unique=True, comment="tier 의 이름이다.")
     image_url = Column(
         String(2083), nullable=True, comment="tier 에 해당하는 image 의 url 값이다."
@@ -112,7 +112,7 @@ class Tiers(BaseIdModel):
 
 class Spells(BaseIdModel):
     __tablename__ = "SPELLS"
-    __table_args__ = {"schema": "CONSTANT"}
+    __table_args__ = {"schema": "COMMON"}
     name = Column(String(20), nullable=False, unique=True, comment="spell의 공식 명칭이다.")
     image_url = Column(
         String(2083), nullable=True, comment="profile icon 에 해당하는 image 의 url 값이다."

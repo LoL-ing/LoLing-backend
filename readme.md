@@ -1,4 +1,5 @@
 # How to run local server
+**최상위 폴더에서 실행**
 ```
 ./scripts/run_local.sh
 ```

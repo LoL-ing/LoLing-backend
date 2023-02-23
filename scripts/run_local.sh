@@ -23,12 +23,16 @@ echo "venv created"
 sleep 1
 fi
 
-cd app
 # 가상환경 열기
-(. venv/Scripts/activate) || (. venv/bin/activate)
-
-# 의존성 설치
+if(. venv/Scripts/activate)
+then
+echo "venv activated by . app/venv/Scripts/activate"
+else
+. venv/bin/activate
+echo "venv activated by . app/venv/bin/activate "
+fi 
+# # 의존성 설치
 pip install -r requirements.txt
 
-# 로컬 서버 실행
+# # 로컬 서버 실행
 uvicorn app.main:app --port 8000 --reload
