@@ -38,4 +38,4 @@ pip install -r requirements.txt
 cd ../
 
 # 로컬 서버 실행
-uvicorn app.main:app --port 8000 --reload
+sudo nohup /home/ubuntu/LoLing-backend/app/venv/bin/python3 -m uvicorn app.main:app --port 8000 &
