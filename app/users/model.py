@@ -15,7 +15,7 @@ class Users(Base):
     __tablename__ = "USERS"
     __table_args__ = {"schema": "USER"}
     signin_id = Column(String(30), primary_key=True)
-    password = Column(String(20), comment="앱 로그인 pw")
+    hashed_password = Column(String(200), comment="앱 로그인 pw")
     name = Column(String(20), comment="실제 사용자 이름")
     username = Column(String(10))
     self_desc = Column(String(200))

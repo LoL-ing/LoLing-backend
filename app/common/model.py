@@ -18,6 +18,10 @@ class BaseIdModel(Base):
 
     __abstract__ = True
 
+    class Config:
+        orm_mode: True
+        arbitrary_types_allowed: True
+
 
 # ---
 
