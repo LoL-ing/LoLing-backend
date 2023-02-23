@@ -16,6 +16,7 @@ fi
 cd /home/ubuntu/LoLing-backend
 git switch master
 git pull origin master
+
 cd app
 
 # 가상환경 없다면 생성
@@ -29,7 +30,7 @@ sleep 1
 fi
 
 # 가상환경 열기
-source /home/ubuntu/LoLing-backend/venv/bin/activate
+source /home/ubuntu/LoLing-backend/app/venv/bin/activate
 
 # 의존성 설치
 pip install -r requirements.txt
