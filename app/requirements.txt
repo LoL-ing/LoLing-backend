@@ -22,4 +22,5 @@ bcrypt
 PyJWT
 fastapi-mail
 sqlalchemy
+sqlModel
 selenium
