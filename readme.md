@@ -5,6 +5,7 @@
 ```
 
 # TODO
+[] sqlAlchemy 보다 `SQLModel` 이 훨씬 schema 작성이 편한 듯 ... mig 고려
 [] domain 별 `repository` 생성
    [] Base CRUD 적용 
 [] `Black Formatter` 일괄 적용
@@ -19,3 +20,4 @@
 # Done
 [x] DDD 폴더 구조 개편
 [x] DB ORM DTO create
+[x] User Basic repo 생성 (get, create)
