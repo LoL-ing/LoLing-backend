@@ -80,5 +80,6 @@ class Lol_profiles(Base):
     user_id = Column(
         Integer, nullable=False, comment="해당 lol profile을 등록한 user의 고유 번호이다."
     )
+    last_updated_at = Column(DateTime(timezone=True), comment="마지막으로 전적 갱신을 한 시점")
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())

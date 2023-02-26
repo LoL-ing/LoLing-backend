@@ -24,3 +24,4 @@ fastapi-mail
 sqlalchemy
 sqlModel
 selenium
+riotwatcher
