@@ -35,8 +35,6 @@ class Users(SQLModel, table=True):
         default_factory=lambda: datetime.utcnow() + timedelta(hours=9)
     )
 
-    test: str = Field()
-
 
 class Relationships(BaseIdModel, table=True):
     __tablename__ = "RELATIONSHIPS"

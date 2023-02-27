@@ -107,5 +107,3 @@ class Current_season_summaries(BaseIdModel, table=True):
     wins: int = Field(
         nullable=False, description="해당 current season summary의 시즌 전체 승리 횟수이다."
     )
-
-    test: str = Field()
