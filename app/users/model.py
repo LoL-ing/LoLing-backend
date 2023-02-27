@@ -15,7 +15,6 @@ from app.database import Base
 
 class Users(SQLModel, table=True):
     __tablename__ = "USERS"
-    __table_args__ = {"schema": "USER"}
     signin_id: str = Field(max_length=30, primary_key=True)
     hashed_password: str = Field(max_length=200, description="앱 로그인 pw")
     name: str = Field(max_length=20, description="실제 사용자 이름")
@@ -38,7 +37,6 @@ class Users(SQLModel, table=True):
 
 class Relationships(BaseIdModel, table=True):
     __tablename__ = "RELATIONSHIPS"
-    __table_args__ = {"schema": "USER"}
     accepted: int = Field(
         nullable=False,
         description="request가 response 되었는지(Y = 1/N = 0)에 대한 상태를 나타낸다.",
@@ -63,7 +61,6 @@ class Relationships(BaseIdModel, table=True):
 
 class Lol_profiles(BaseLolProfile, table=True):
     __tablename__ = "LOL_PROFILES"
-    __table_args__ = {"schema": "USER"}
     profile_icon_id: int = Field(
         nullable=False, description="해당 lol profile이 설정한 profile icon의 고유 번호."
     )

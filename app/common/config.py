@@ -23,7 +23,7 @@ class Settings(BaseSettings):
         Returns:
             str: The assembled database URL.
         """
-        return f"mysql+pymysql://{self.RDS_USERNAME}:{self.RDS_PASSWORD}@{self.RDS_HOSTNAME}:{self.RDS_PORT}"
+        return f"mysql+pymysql://{self.RDS_USERNAME}:{self.RDS_PASSWORD}@{self.RDS_HOSTNAME}:{self.RDS_PORT}/{self.RDS_DB_NAME}"
 
     MONGO_USERNAME: str
     MONGO_PASSWORD: str

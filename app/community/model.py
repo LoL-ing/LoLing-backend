@@ -13,7 +13,6 @@ from app.common.model import BaseIdModel
 
 class Attachments(BaseIdModel, table=True):
     __tablename__ = "ATTACHMENTS"
-    __table_args__ = {"schema": "COMMUNITY"}
     image_url: str = Field(
         max_length=203,
         nullable=False,
@@ -31,7 +30,6 @@ class Attachments(BaseIdModel, table=True):
 
 class Boards(BaseIdModel, table=True):
     __tablename__ = "BOARDS"
-    __table_args__ = {"schema": "COMMUNITY"}
     title: str = Field(
         max_length=10, nullable=False, unique=True, description="board의 제목이다."
     )
@@ -40,7 +38,6 @@ class Boards(BaseIdModel, table=True):
 
 class Comments(BaseIdModel, table=True):
     __tablename__ = "COMMENTS"
-    __table_args__ = {"schema": "COMMUNITY"}
     content: str = Field(
         nullable=False,
         description="comment가 담고 있는 내용이다. text정보만 수용 가능하다. 댓글을 구성하는 핵심 요소이다.",
@@ -60,7 +57,6 @@ class Comments(BaseIdModel, table=True):
 
 class Posts(BaseIdModel, table=True):
     __tablename__ = "POSTS"
-    __table_args__ = {"schema": "COMMUNITY"}
     board_id: int = Field(
         nullable=False,
         description="게시물이 포함된 게시판의 id.  어떤 게시판에 속해 있는지 구분하기 위한 필수 요소이다.",
@@ -77,7 +73,6 @@ class Posts(BaseIdModel, table=True):
 
 class Reported_comments(BaseIdModel, table=True):
     __tablename__ = "REPORTED_COMMENTS"
-    __table_args__ = {"schema": "COMMUNITY"}
     description: str = Field(
         max_length=30, nullable=False, description="신고된 comment 에 대한 신고 상세 설명이다."
     )
@@ -91,7 +86,6 @@ class Reported_comments(BaseIdModel, table=True):
 
 class Reported_posts(BaseIdModel, table=True):
     __tablename__ = "REPORTED_POSTS"
-    __table_args__ = {"schema": "COMMUNITY"}
     description: str = Field(
         max_length=30, nullable=False, description="post 신고에 대한 신고 상세 설명이다."
     )
@@ -105,7 +99,6 @@ class Reported_posts(BaseIdModel, table=True):
 
 class Reported_Users(BaseIdModel, table=True):
     __tablename__ = "REPORTED_USERS"
-    __table_args__ = {"schema": "COMMUNITY"}
     reported_user_id: int = Field(
         nullable=False, description="신고당한 유저의 고유 번호(Users)이다."
     )

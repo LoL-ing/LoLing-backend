@@ -96,24 +96,23 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
-    for schema_name in schema_names:
-        try:
-            print(f"Alembic online migration: {schema_name}")
-            connectable = create_engine(settings.DB_URL + f"/{schema_name}")
+    # for schema_name in schema_names:
+    try:
+        # print(f"Alembic online migration: {schema_name}")
+        connectable = create_engine(settings.DB_URL)
 
-            with connectable.connect() as connection:
-                context.configure(
-                    connection=connection,
-                    target_metadata=target_metadata,
-                    render_as_batch=True,
-                    include_schemas=True,
-                )
+        with connectable.connect() as connection:
+            context.configure(
+                connection=connection,
+                target_metadata=target_metadata,
+                render_as_batch=True,
+                # include_schemas=True,
+            )
 
-                with context.begin_transaction():
-                    context.run_migrations()
-        except Exception as e:
-            raise e
-            continue
+            with context.begin_transaction():
+                context.run_migrations()
+    except Exception as e:
+        raise e
 
 
 if context.is_offline_mode():

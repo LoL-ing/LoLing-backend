@@ -54,7 +54,6 @@ class BaseLolProfile(SQLModel):
 
 class Champions(BaseIdModel, table=True):
     __tablename__ = "CHAMPIONS"
-    __table_args__ = {"schema": "COMMON"}
     name_en: str = Field(
         max_length=20, nullable=False, unique=True, description="champion의 영어 이름이다."
     )
@@ -71,7 +70,6 @@ class Champions(BaseIdModel, table=True):
 
 class Items(BaseIdModel, table=True):
     __tablename__ = "ITEMS"
-    __table_args__ = {"schema": "COMMON"}
     name: str = Field(max_length=50, nullable=False, description="item 의 이름이다.")
     image_url: str = Field(
         max_length=2083, nullable=True, description="champion 에 해당하는 image 의 url 값이다."
@@ -80,7 +78,6 @@ class Items(BaseIdModel, table=True):
 
 class Lines(BaseIdModel, table=True):
     __tablename__ = "LINES"
-    __table_args__ = {"schema": "COMMON"}
     name: str = Field(max_length=10, nullable=False, description="line 의 이름이다.")
     image_url: str = Field(
         max_length=2083, nullable=True, description="line 에 해당하는 image 의 url 값이다."
@@ -89,7 +86,6 @@ class Lines(BaseIdModel, table=True):
 
 class Profile_icons(BaseIdModel, table=True):
     __tablename__ = "PROFILE_ICONS"
-    __table_args__ = {"schema": "COMMON"}
     image_url: str = Field(
         max_length=2083,
         nullable=True,
@@ -99,7 +95,6 @@ class Profile_icons(BaseIdModel, table=True):
 
 class Queues(BaseIdModel, table=True):
     __tablename__ = "QUEUES"
-    __table_args__ = {"schema": "COMMON"}
     type: str = Field(
         max_length=30,
         nullable=False,
@@ -110,7 +105,6 @@ class Queues(BaseIdModel, table=True):
 
 class Runes(BaseIdModel, table=True):
     __tablename__ = "RUNES"
-    __table_args__ = {"schema": "COMMON"}
     name: str = Field(
         max_length=20, nullable=False, unique=True, description="rune 의 이름이다."
     )
@@ -121,7 +115,6 @@ class Runes(BaseIdModel, table=True):
 
 class Schools(BaseIdModel, table=True):
     __tablename__ = "SCHOOLS"
-    __table_args__ = {"schema": "COMMON"}
     name: str = Field(
         max_length=25,
         nullable=False,
@@ -137,7 +130,6 @@ class Schools(BaseIdModel, table=True):
 
 class Tiers(BaseIdModel, table=True):
     __tablename__ = "TIERS"
-    __table_args__ = {"schema": "COMMON"}
     name: str = Field(
         max_length=20, nullable=False, unique=True, description="tier 의 이름이다."
     )
@@ -148,7 +140,6 @@ class Tiers(BaseIdModel, table=True):
 
 class Spells(BaseIdModel, table=True):
     __tablename__ = "SPELLS"
-    __table_args__ = {"schema": "COMMON"}
     name: str = Field(
         max_length=30, nullable=False, unique=True, description="spell의 공식 명칭이다."
     )
