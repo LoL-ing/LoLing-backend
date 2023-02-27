@@ -6,6 +6,7 @@
 
 # TODO
 [] sqlAlchemy 보다 `SQLModel` 이 훨씬 schema 작성이 편한 듯 ... mig 고려
+   - (multiple database alembic handling)[https://stackoverflow.com/questions/41109804/alembic-sqlalchemy-multiple-databases]
 [] domain 별 `repository` 생성
    [] Base CRUD 적용 
 [] `Black Formatter` 일괄 적용

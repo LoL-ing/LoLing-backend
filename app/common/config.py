@@ -12,6 +12,19 @@ class Settings(BaseSettings):
     RDS_USERNAME: str
     RDS_PASSWORD: str
 
+    @property
+    def DB_URL(self) -> str:
+        """
+        Assemble database URL from self.
+
+        Args:
+            self ( _obj_ ) : object reference.
+
+        Returns:
+            str: The assembled database URL.
+        """
+        return f"mysql+pymysql://{self.RDS_USERNAME}:{self.RDS_PASSWORD}@{self.RDS_HOSTNAME}:{self.RDS_PORT}"
+
     MONGO_USERNAME: str
     MONGO_PASSWORD: str
     RIOT_AP_ID: str
@@ -31,7 +44,12 @@ class Settings(BaseSettings):
 
     class Config:
         case_sensitive = True
-        env_file = os.path.abspath(os.getcwd()) + "/.env"
+        env_file = (
+            os.path.join(
+                os.path.dirname(os.path.abspath(__file__)), os.pardir, os.pardir
+            )
+            + "/.env"
+        )
 
 
 settings = Settings()
