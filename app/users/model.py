@@ -87,4 +87,4 @@ class Lol_profiles(BaseLolProfile, table=True):
     user_id: int = Field(
         nullable=False, description="해당 lol profile을 등록한 user의 고유 번호이다."
     )
-    last_updated_at: datetime = Field()
+    last_updated_at: datetime = Field(nullable=True)
