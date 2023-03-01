@@ -38,12 +38,11 @@ fi
 # 의존성 설치
 pip install -r requirements.txt
 
-
+# schema mig
 alembic revision --autogenerate && \
 alembic upgrade head
 
 cd ../
-
 
 # 로컬 서버 실행
 uvicorn app.main:app --port 8000 --reload
