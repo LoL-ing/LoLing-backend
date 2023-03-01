@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from typing import Optional
 from sqlalchemy.sql import func
 
 from sqlalchemy import (
@@ -13,19 +14,23 @@ from app.common.model import BaseIdModel, BaseLolProfile, SQLModel
 from app.database import Base
 
 
-class Users(SQLModel, table=True):
-    __tablename__ = "USERS"
+class UsersBase(SQLModel):
     signin_id: str = Field(max_length=30, primary_key=True)
-    hashed_password: str = Field(max_length=200, description="앱 로그인 pw")
+    password: str = Field(max_length=200, description="앱 로그인 pw")
     name: str = Field(max_length=20, description="실제 사용자 이름")
     username: str = Field(max_length=10)
     self_desc: str = Field(max_length=200)
     phone_num: str = Field(max_length=11)
-    manner_tier: str = Field(max_length=20)
-    curr_lol_account: str = Field(max_length=30)
-    like_cnt: int = Field()
-    hate_cnt: int = Field()
-    profile_image_uri: str = Field(max_length=200)
+
+
+class Users(UsersBase, table=True):
+    __tablename__ = "USERS"
+    hashed_password: str = Field(max_length=200, description="암호화 pw")
+    manner_tier: Optional[str] = Field(max_length=20, nullable=True)
+    curr_lol_account: Optional[str] = Field(max_length=30, nullable=True)
+    like_cnt: int = Field(default=0)
+    hate_cnt: int = Field(default=0)
+    profile_image_uri: str = Field(max_length=200, nullable=True)
     updated_at: datetime = Field(
         default_factory=lambda: datetime.utcnow() + timedelta(hours=9),
         sa_column_kwargs={"onupdate": lambda: datetime.utcnow() + timedelta(hours=9)},

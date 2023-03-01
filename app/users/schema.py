@@ -2,6 +2,8 @@ import datetime
 from typing import Union
 from pydantic import BaseModel
 
+from app.users.model import UsersBase
+
 
 class IResUserGet(BaseModel):
     hashed_password: Union[str, None]
@@ -21,18 +23,5 @@ class IResUserGet(BaseModel):
         arbitrary_types_allowed: True
 
 
-class IUserCreate(BaseModel):
-    # Column(String(30), primary_key=True)
-    signin_id: str
-    # Column(String(200), comment="앱 로그인 pw")
-    password: str
-    # Column(String(20), comment="실제 사용자 이름")
-    name: str
-    # Column(String(10))
-    username: str
-    # Column(String(200))
-    self_desc: str
-    # Column(String(11))
-    phone_num: str
-    # Column(String(200))
-    profile_image_uri: str
+class IUserCreate(UsersBase):
+    pass

@@ -4,9 +4,9 @@ from requests import Session
 from sqlalchemy import select
 
 # Routes
-# from app.community.router import router as community_router
-# # from app.users.router import router as users_router
-# from app.match_history.router import router as match_history_router
+from app.community.router import router as community_router
+from app.users.router import router as users_router
+from app.match_history.router import router as match_history_router
 
 # Models
 # * DB 생성 전 import 하여 불러오기
@@ -24,7 +24,7 @@ app = FastAPI()
 Base.metadata.create_all(bind=engine)
 
 # attach routers
-# app.include_router(users_router, prefix="/users", tags=["유저 등록 및 로그인"])
+app.include_router(users_router, prefix="/users", tags=["유저 등록 및 로그인"])
 # app.include_router(community_router, prefix="/community", tags=["커뮤니티"])
 # app.include_router(match_history_router, prefix="/match_history", tags=["유저 매치 히스토리"])
 

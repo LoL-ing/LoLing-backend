@@ -8,12 +8,12 @@ from fastapi import APIRouter, Depends
 from requests import Session
 from app.users.model import Users
 
-from app.users.repository import UsersRepo
+from app.users.crud import UserCRUD
 from app.users.schema import IResUserGet, IUserCreate
 
 router = APIRouter()
 
-user_repo = UsersRepo()
+user_crud = UserCRUD()
 
 
 @router.get(
@@ -26,11 +26,13 @@ user_repo = UsersRepo()
     ],
 )
 def get_user(signin_id: str, db_session: Session = Depends(get_db)):
-    user = user_repo.get(signin_id=signin_id, db_session=db_session)
-    res = create_response(data=as_dict(user), message="get_user")
-    return res
+    user = user_crud.get(signin_id=signin_id, db_session=db_session)
+
+    if user == None:
+        return create_response(message="no users", data={})
+    return create_response(data=as_dict(user), message="get_user")
 
 
 @router.post("/")
 def create_user(IUserCreate: IUserCreate, db_session: Session = Depends(get_db)):
-    return user_repo.create(IUserCreate=IUserCreate, db_session=db_session)
+    return user_crud.create(IUserCreate=IUserCreate, db_session=db_session)

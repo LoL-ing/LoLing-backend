@@ -1,13 +1,12 @@
 from sqlalchemy import (
     VARCHAR,
 )
-from sqlmodel import Field
+from sqlmodel import Field, SQLModel
 
 from app.common.model import BaseIdModel
 
 
-class Match_histories(BaseIdModel, table=True):
-    __tablename__ = "MATCH_HISTORIES"
+class MatchHistoriesBase(SQLModel):
     level: int = Field(nullable=False, description="해당 match 내에서 user의 level을 나타낸다.")
     CS: int = Field(
         nullable=False,
@@ -73,7 +72,11 @@ class Match_histories(BaseIdModel, table=True):
     )
 
 
-class Current_season_summaries(BaseIdModel, table=True):
+class MatchHistories(BaseIdModel, MatchHistoriesBase, table=True):
+    __tablename__ = "MATCH_HISTORIES"
+
+
+class CurrentSeasonSummaries(BaseIdModel, table=True):
     __tablename__ = "CURRENT_SEASON_SUMMARIES"
     losses: int = Field(
         nullable=False,

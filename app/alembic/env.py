@@ -32,8 +32,8 @@ from app.community.model import (
     Reported_Users,
 )  # necessarily to import something from file where your models are stored
 from app.match_history.model import (
-    Match_histories,
-    Current_season_summaries,
+    MatchHistories,
+    CurrentSeasonSummaries,
 )  # necessarily to import something from file where your models are stored
 from app.users.model import (
     Users,
