@@ -4,8 +4,8 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import select
 from uuid import UUID
 
-from match_history.model import MatchHistories
-from match_history.schema import IMatchHistoriesCreate, IMatchHistoriesUpdate
+from app.match_history.model import MatchHistories
+from app.match_history.schema import IMatchHistoriesCreate, IMatchHistoriesUpdate
 
 
 class CRUDMatchHistories(

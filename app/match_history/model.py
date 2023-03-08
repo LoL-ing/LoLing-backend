@@ -54,7 +54,7 @@ class MatchHistoriesBase(SQLModel):
         max_length=20, nullable=False, description="각 match의 참여한 개별 소환사의 이름을 나타낸다."
     )
     match_id: str = Field(
-        max_length=10, nullable=False, description="라이엇 API 가 제공하는 해당 match 의 고유 번호이다."
+        max_length=100, nullable=False, description="라이엇 API 가 제공하는 해당 match 의 고유 번호이다."
     )
     line_name: str = Field(
         max_length=20, nullable=False, description="해당 match에서 user가 플레이한 line 이름이다. "
