@@ -7,7 +7,7 @@ from app.common.schema import IResponseBase, create_response
 from app.users.crud import lol_profiles as lol_profiles_crud
 from app.match_history.schema import IMatchHistoriesCreate
 from app.database import get_db
-
+from app.match_history.crud import match_history_crud
 
 router = APIRouter()
 
@@ -66,5 +66,45 @@ def add_match_history(
         start_time = match_histories[0].get("info", {}).get("gameStartTimestamp")
 
         match_ids = riot_api.get_match_list(count=5, start_time=start_time)
+        
+        # 1번만 하기.. ㅠㅠ
+        break
+    match_histories_mapped = []
+    for match in match_histories:
+        
+        for participant in match.get("info", {}).get("participants", []):
+            match_histories_mapped.append(
+                IMatchHistoriesCreate(
+            level= participant.get("champLevel", ""),
+            CS= participant.get("totalMinionsKilled", 0),
+            item_0_id= participant.get("item0"),
+            item_1_id= participant.get("item1"),
+            item_2_id= participant.get("item2"),
+            item_3_id= participant.get("item3"),
+            item_4_id= participant.get("item4"),
+            item_5_id= participant.get("item5"),
+            item_6_id= participant.get("item6"),
+            spell_0_id= participant.get("summoner1Id", ""),
+            spell_1_id= participant.get("summoner2Id", ""),
+            rune_0_id= participant.get("perks", {}).get("styles", [])[0].get("style"),
+            rune_1_id= participant.get("perks", {}).get("styles", [])[1].get("style"),
+            season= match.get('info', {}).get("gameVersion", ""),
+            gold= participant.get("goldEarned", ""),
+            play_duration= str(match.get('info', {}).get("gameDuration", "")),
+            play_time= str(match.get('info', {}).get("gameStartTimestamp", "")),
+            queue_type= match.get('info', {}).get("queueId", ""),
+            summoner_name= participant.get("summonerName", ""),
+            match_id= match.get("metadata",{}).get("matchId",""),
+            line_name= participant.get("lane"),
+            champion_name_en= participant.get("championName", ""),
+            kill= participant.get("kills", ""),
+            death= participant.get("deaths", ""),
+            assist= participant.get("assists", ""),
+            win_or_lose= 1 if participant.get("win", False) else 0,
+                )
+            )
+    #* List<MatchHistories> create
+    print(match_histories_mapped)
+    match_history_crud.create_multiple(obj_in_list=match_histories_mapped, db_session=db_session)
 
-    return match_histories
+    return create_response(data=match_histories, message=f"Riot 전적 정보 {len(match_histories)} 개 insert 완료")
