@@ -13,10 +13,6 @@ sudo kill -9 $PID
 sleep 1
 fi
 
-cd /home/ubuntu/LoLing-backend
-git switch master
-git pull origin master
-
 cd app
 
 # 가상환경 없다면 생성
@@ -30,12 +26,23 @@ sleep 1
 fi
 
 # 가상환경 열기
-source /home/ubuntu/LoLing-backend/app/venv/bin/activate
+if(. venv/Scripts/activate)
+then
+echo "venv activated by . app/venv/Scripts/activate"
+else
+. venv/bin/activate
+echo "venv activated by . app/venv/bin/activate "
+fi 
+
 
 # 의존성 설치
 pip install -r requirements.txt
 
+# schema mig
+alembic revision --autogenerate && \
+alembic upgrade head
+
 cd ../
 
 # 로컬 서버 실행
-sudo nohup /home/ubuntu/LoLing-backend/app/venv/bin/python3 -m uvicorn app.main:app --port 8000 &
+uvicorn app.main:app --port 8000 --reload

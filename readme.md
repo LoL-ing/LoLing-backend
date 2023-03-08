@@ -1,23 +1,26 @@
-## 로컬에서 실행
+# How to run local server
+**최상위 폴더에서 실행**
+```
+./scripts/run_local.sh
+```
 
-1. 가상환경 활성화
-
-`. venv/bin/activate`
-`. venv/Scripts/activate`
-
-2. FastAPI app 실행
-
-`uvicorn main:app --port 8000 --host 0.0.0.0 --reload`
---> 사이트에 연결할 수 없다고 떠서 port랑 host지정 빼니까 잘열림 (양여름)
-
-3. Window 에서 mongodb 연결 안될 때 (양여름)
-   a. https://blog.minamiland.com/551 --> 해결못함
-
-pip install -r requirements.txt
-
-
-4. 
-pem키 인증
-ssh -i "LoLing-backend.pem" ubuntu@ec2-54-165-207-136.compute-1.amazonaws.com
-aws 배포 
-'./scripts/restart_app.sh' 
+# TODO
+[] SQLModel async 적용
+[] `Black Formatter` 일괄 적용
+[] `login` 로직 적용
+[] `라이엇 API` 요청 - 적재 로직
+   - 서버에 통합?
+[] 프론트엔드 로컬에 띄우기 쉽게 `Docker`
+  
+# Done
+[x] sqlAlchemy 보다 `SQLModel` 이 훨씬 schema 작성이 편한 듯 ... mig 고려
+   - (multiple database alembic handling)[https://stackoverflow.com/questions/41109804/alembic-sqlalchemy-multiple-databases]
+[x] alembic 적용
+[x] domain 별 `crud` 생성
+   [x] Base CRUD 적용 
+[x] 서버에 **DB 다시 띄우기**
+[x] `pip` -> `poetry`
+   - `poetry` 안 깔린 사람들 많을 것 같아서 일단 패스
+[x] DDD 폴더 구조 개편
+[x] DB ORM DTO create
+[x] User Basic repo 생성 (get, create)
