@@ -2,12 +2,6 @@ from datetime import datetime, timedelta
 from typing import Optional
 from sqlalchemy.sql import func
 
-from sqlalchemy import (
-    Column,
-    String,
-    Integer,
-    DateTime,
-)
 from sqlmodel import Field
 from app.common.model import BaseIdModel, BaseLolProfile, SQLModel
 
@@ -64,7 +58,7 @@ class Relationships(BaseIdModel, table=True):
     )
 
 
-class Lol_profiles(BaseLolProfile, table=True):
+class LolProfiles(BaseLolProfile, table=True):
     __tablename__ = "LOL_PROFILES"
     profile_icon_id: int = Field(
         nullable=False, description="해당 lol profile이 설정한 profile icon의 고유 번호."
@@ -84,7 +78,7 @@ class Lol_profiles(BaseLolProfile, table=True):
     summoner_name: str = Field(
         max_length=20, description="해당 lol profile의 롤에서 사용하고 있는 소환사 이름이다."
     )
-    user_id: int = Field(
-        nullable=False, description="해당 lol profile을 등록한 user의 고유 번호이다."
+    user_id: str = Field(
+        max_length=30, nullable=False, description="해당 lol profile을 등록한 user의 고유 번호이다."
     )
     last_updated_at: datetime = Field(nullable=True)

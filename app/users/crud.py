@@ -1,38 +1,39 @@
-from fastapi import HTTPException
+from typing import Optional, Union
+from app.common.crud import CRUDBase
+from sqlmodel.ext.asyncio.session import AsyncSession
+from sqlmodel import select
+from uuid import UUID
 
-from sqlalchemy import select
-from app.users.schema import IUserCreate, IResUserGet
-from requests import Session
+from app.users.model import LolProfiles, Users
+from app.users.schema import (
+    ILolProfilesCreate,
+    ILolProfilesUpdate,
+    IUserCreate,
+    IUserUpdate,
+)
 
-from app.users.model import Users
 
-
-class UserCRUD:
-    def get(self, signin_id: str, db_session: Session) -> IResUserGet:
-        query = select(Users).where(Users.signin_id == signin_id)
+class CRUDUser(CRUDBase[Users, IUserCreate, IUserUpdate]):
+    def get(
+        self, *, signin_id: str, db_session: Optional[AsyncSession] = None
+    ) -> Optional[Users]:
+        db_session = db_session
+        query = select(self.model).where(self.model.signin_id == signin_id)
         response = db_session.execute(query)
         return response.scalar_one_or_none()
 
-    def create(self, IUserCreate: IUserCreate, db_session: Session):
-        user = Users(
-            signin_id=IUserCreate.signin_id,
-            hashed_password=IUserCreate.password,
-            password=IUserCreate.password,
-            name=IUserCreate.name,
-            username=IUserCreate.username,
-            self_desc=IUserCreate.self_desc,
-            phone_num=IUserCreate.phone_num,
-        )
 
-        try:
-            db_session.add(user)
-            db_session.commit()
-        except Exception as E:
-            db_session.rollback()
-            raise E
-            raise HTTPException(
-                status_code=409,
-                detail="Resource already exists",
-            )
-        db_session.refresh(user)
-        return user
+user = CRUDUser(Users)
+
+
+class CRUDLolProfiles(CRUDBase[LolProfiles, ILolProfilesCreate, ILolProfilesUpdate]):
+    def get(
+        self, *, puu_id: str, db_session: Optional[AsyncSession] = None
+    ) -> Optional[LolProfiles]:
+        db_session = db_session
+        query = select(self.model).where(self.model.puu_id == puu_id)
+        response = db_session.execute(query)
+        return response.scalar_one_or_none()
+
+
+lol_profiles = CRUDLolProfiles(LolProfiles)

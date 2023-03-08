@@ -26,15 +26,15 @@ class RiotApiUrl(Enum):
 
 
 class RiotApiController:
-    def __init__(self, lol_name: str, signin_id: Optional[str] = ""):
+    def __init__(self, summoner_name: str, signin_id: Optional[str] = ""):
         self.signin_id = signin_id
-        self.lol_name = parse.quote(lol_name)
+        self.summoner_name = parse.quote(summoner_name)
         self.api_key = settings.RIOT_API_KEY
         self.my_region = "kr"
         self.lol_watcher = LolWatcher(self.api_key)
 
         self.summoner_info = self.lol_watcher.summoner.by_name(
-            self.my_region, self.lol_name
+            self.my_region, self.summoner_name
         )
 
         self.puu_id = self.summoner_info.get("puuid", "")
@@ -51,19 +51,26 @@ class RiotApiController:
 
         self.base_params = {}
 
+    def get_summoner_info(self):
+
+        return self.lol_watcher._summoner.by_name(
+            region=self.my_region, summoner_name=self.summoner_name
+        )
+
     def get_league_info(self):
         return self.lol_watcher.league.by_summoner(self.my_region, self.id)
 
-    def get_match_list(self):
-        return self.lol_watcher.match.matchlist_by_puuid(
-            puuid=self.puu_id, region=self.my_region
+    def get_match_list(self, start_time: int, count: int):
+        ret = self.lol_watcher.match.matchlist_by_puuid(
+            puuid=self.puu_id,
+            region=self.my_region,
+            start_time=start_time,
+            count=count,
         )
+        return ret
 
     def get_match_info_by_id(self, match_id: str):
         return self.lol_watcher.match.by_id(region=self.my_region, match_id=match_id)
 
 
-api = RiotApiController("꼽 죽")
-
-for match_id in api.get_match_list():
-    print(api.get_match_info_by_id(match_id=match_id))
+riot_api = RiotApiController("꼽 죽")

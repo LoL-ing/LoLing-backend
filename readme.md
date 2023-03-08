@@ -5,8 +5,7 @@
 ```
 
 # TODO
-[] sqlAlchemy 보다 `SQLModel` 이 훨씬 schema 작성이 편한 듯 ... mig 고려
-   - (multiple database alembic handling)[https://stackoverflow.com/questions/41109804/alembic-sqlalchemy-multiple-databases]
+[] SQLModel async 적용
 [] `Black Formatter` 일괄 적용
 [] `login` 로직 적용
 [] `라이엇 API` 요청 - 적재 로직
@@ -14,6 +13,8 @@
 [] 프론트엔드 로컬에 띄우기 쉽게 `Docker`
   
 # Done
+[x] sqlAlchemy 보다 `SQLModel` 이 훨씬 schema 작성이 편한 듯 ... mig 고려
+   - (multiple database alembic handling)[https://stackoverflow.com/questions/41109804/alembic-sqlalchemy-multiple-databases]
 [x] alembic 적용
 [x] domain 별 `crud` 생성
    [x] Base CRUD 적용 

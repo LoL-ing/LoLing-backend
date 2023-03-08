@@ -20,3 +20,7 @@ def auth_required(Authorization: str = Header(None, title="JWT")) -> dict:
 
     except (IndexError, jwt.PyJWTError):
         raise Exception
+
+
+def current_user(decoded_token=Depends(auth_required)):
+    decoded_token

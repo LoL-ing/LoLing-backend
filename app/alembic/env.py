@@ -38,7 +38,7 @@ from app.match_history.model import (
 from app.users.model import (
     Users,
     Relationships,
-    Lol_profiles,
+    LolProfiles,
 )  # necessarily to import something from file where your models are stored
 
 schema_names = [
