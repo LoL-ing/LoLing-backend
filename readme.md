@@ -5,6 +5,7 @@
 ```
 
 # TODO
+1. MATCH HISTORIES 의 통계 내기
 [] SQLModel async 적용
 [] `Black Formatter` 일괄 적용
 [] `login` 로직 적용

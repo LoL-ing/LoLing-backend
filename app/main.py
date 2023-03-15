@@ -25,8 +25,8 @@ Base.metadata.create_all(bind=engine)
 
 # attach routers
 app.include_router(users_router, prefix="/users", tags=["유저 등록 및 로그인"])
-# app.include_router(community_router, prefix="/community", tags=["커뮤니티"])
-app.include_router(match_history_router, prefix="/match_history", tags=["유저 매치 히스토리"])
+# app.include_router(community_router, prefix="/communities", tags=["커뮤니티"])
+app.include_router(match_history_router, prefix="/match-histories", tags=["유저 매치 히스토리"])
 
 
 @app.get("/")

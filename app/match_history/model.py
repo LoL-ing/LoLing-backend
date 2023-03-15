@@ -102,9 +102,41 @@ class CurrentSeasonSummaries(BaseIdModel, table=True):
         nullable=False,
         description="라이엇 API에서 제공하는 소환사를 구별하기 위한 고유 번호. 라이엇 API의 league 정보를 불러오는데 쓰이는 고유번호이다.  해당 Current Season Summary의 소환사를 가리킨다.",
     )
+    puu_id: str = Field(
+        max_length=78,
+        primary_key=True,
+        nullable=False,
+        description="라이엇 API에서 제공하는 글로벌한 소환사의 고유 번호. lol profile을 구분하기 위한 필수 요소이다. 또한 라이엇 API에서 Match ID를 불러오는데 쓰이는 고유번호이다.",
+    )
     tier_id: int = Field(
         nullable=False, description="해당 Season Summary가 속한 tier의 고유 번호이다."
     )
     wins: int = Field(
         nullable=False, description="해당 current season summary의 시즌 전체 승리 횟수이다."
     )
+
+
+class MostLineSummariesBase(BaseIdModel):
+    __tablename__ = "MOST_LINE_SUMMARIES"
+    current_season_summary_id: int = Field()
+    line_id: int = Field()
+    kda: float = Field()
+    win_rate: float = Field()
+    count: int = Field()
+
+
+class MostLineSummaries(MostLineSummariesBase, table=True):
+    pass
+
+
+class MostChampionBase(BaseIdModel):
+    __tablename__ = "MOST_CAHMPION_SUMMARIES"
+    current_season_summary_id: int = Field()
+    champion_id: int = Field()
+    kda: float = Field()
+    win_rate: float = Field()
+    count: int = Field()
+
+
+class MostChampion(MostChampionBase, table=True):
+    pass
