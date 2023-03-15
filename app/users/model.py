@@ -24,7 +24,7 @@ class Users(UsersBase, table=True):
     curr_lol_account: Optional[str] = Field(max_length=30, nullable=True)
     like_cnt: int = Field(default=0)
     hate_cnt: int = Field(default=0)
-    profile_image_uri: str = Field(max_length=200, nullable=True)
+    profile_image_uri: Optional[str] = Field(max_length=200, nullable=True)
     updated_at: datetime = Field(
         default_factory=lambda: datetime.utcnow() + timedelta(hours=9),
         sa_column_kwargs={"onupdate": lambda: datetime.utcnow() + timedelta(hours=9)},
@@ -79,6 +79,6 @@ class LolProfiles(BaseLolProfile, table=True):
         max_length=20, description="해당 lol profile의 롤에서 사용하고 있는 소환사 이름이다."
     )
     user_id: str = Field(
-        max_length=30, nullable=False, description="해당 lol profile을 등록한 user의 고유 번호이다."
+        max_length=100, nullable=False, description="해당 lol profile을 등록한 user의 고유 번호이다."
     )
     last_updated_at: datetime = Field(nullable=True)

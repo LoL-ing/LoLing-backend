@@ -76,7 +76,7 @@ class MatchHistories(BaseIdModel, MatchHistoriesBase, table=True):
     __tablename__ = "MATCH_HISTORIES"
 
 
-class CurrentSeasonSummaries(BaseIdModel, table=True):
+class CurrentSeasonSummariesBase(SQLModel):
     __tablename__ = "CURRENT_SEASON_SUMMARIES"
     losses: int = Field(
         nullable=False,
@@ -98,7 +98,6 @@ class CurrentSeasonSummaries(BaseIdModel, table=True):
     )
     summoner_id: str = Field(
         max_length=47,
-        unique=True,
         nullable=False,
         description="라이엇 API에서 제공하는 소환사를 구별하기 위한 고유 번호. 라이엇 API의 league 정보를 불러오는데 쓰이는 고유번호이다.  해당 Current Season Summary의 소환사를 가리킨다.",
     )
@@ -116,10 +115,14 @@ class CurrentSeasonSummaries(BaseIdModel, table=True):
     )
 
 
+class CurrentSeasonSummaries(BaseIdModel, CurrentSeasonSummariesBase, table=True):
+    pass
+
+
 class MostLineSummariesBase(BaseIdModel):
     __tablename__ = "MOST_LINE_SUMMARIES"
     current_season_summary_id: int = Field()
-    line_id: int = Field()
+    line_name: str = Field()
     kda: float = Field()
     win_rate: float = Field()
     count: int = Field()
@@ -130,9 +133,9 @@ class MostLineSummaries(MostLineSummariesBase, table=True):
 
 
 class MostChampionBase(BaseIdModel):
-    __tablename__ = "MOST_CAHMPION_SUMMARIES"
+    __tablename__ = "MOST_CHAMPION_SUMMARIES"
     current_season_summary_id: int = Field()
-    champion_id: int = Field()
+    champion_name: str = Field()
     kda: float = Field()
     win_rate: float = Field()
     count: int = Field()

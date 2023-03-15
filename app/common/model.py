@@ -52,10 +52,14 @@ class BaseLolProfile(SQLModel):
     )
 
 
-class Champions(BaseIdModel, table=True):
+class Champions(SQLModel, table=True):
     __tablename__ = "CHAMPIONS"
     name_en: str = Field(
-        max_length=20, nullable=False, unique=True, description="champion의 영어 이름이다."
+        max_length=20,
+        nullable=False,
+        unique=True,
+        description="champion의 영어 이름이다.",
+        primary_key=True,
     )
     name_kr: str = Field(
         max_length=15,
@@ -76,9 +80,14 @@ class Items(BaseIdModel, table=True):
     )
 
 
-class Lines(BaseIdModel, table=True):
+class Lines(SQLModel, table=True):
     __tablename__ = "LINES"
-    name: str = Field(max_length=10, nullable=False, description="line 의 이름이다.")
+    name: str = Field(
+        max_length=10,
+        nullable=False,
+        description="line 의 이름이다.",
+        primary_key=True,
+    )
     image_url: str = Field(
         max_length=2083, nullable=True, description="line 에 해당하는 image 의 url 값이다."
     )

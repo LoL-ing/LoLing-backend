@@ -1,4 +1,8 @@
-from app.match_history.model import MatchHistoriesBase
+from app.match_history.model import (
+    CurrentSeasonSummaries,
+    CurrentSeasonSummariesBase,
+    MatchHistoriesBase,
+)
 from uuid import UUID
 
 from app.common.utils import optional
@@ -14,5 +18,19 @@ class IMatchHistoriesRead(MatchHistoriesBase):
 
 # All these fields are optional
 @optional
-class IMatchHistoriesUpdate(MatchHistoriesBase):
+class IMatchHistoriesUpdate(CurrentSeasonSummaries):
+    pass
+
+
+class ICurrentSeasonSummariesCreate(CurrentSeasonSummariesBase):
+    pass
+
+
+class ICurrentSeasonSummariesRead(CurrentSeasonSummariesBase):
+    id: UUID
+
+
+# All these fields are optional
+@optional
+class ICurrentSeasonSummariesUpdate(CurrentSeasonSummariesBase):
     pass

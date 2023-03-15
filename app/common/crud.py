@@ -85,7 +85,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
                 status_code=409,
                 detail="Resource already exists",
             )
-        db_session.refresh(db_obj)
+        # db_session.refresh(db_obj)
         return db_obj
 
     def create_multiple(
