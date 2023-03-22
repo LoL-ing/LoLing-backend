@@ -1,13 +1,25 @@
 from datetime import datetime
-from typing import Union
+from typing import Optional, Union
 from pydantic import BaseModel
 
 from app.users.model import UsersBase
-from app.common.model import BaseLolProfile
+from app.common.model import BaseLolProfile, Schools
+
+
+class IUserRead(UsersBase):
+    hashed_password: str
+    manner_tier: Optional[str]
+    curr_lol_account: Optional[str]
+    like_cnt: int
+    hate_cnt: int
+    profile_image_uri: Optional[str]
+
+    school: Schools
 
 
 class IUserCreate(UsersBase):
     hashed_password: str
+    curr_lol_account: Optional[str]
 
 
 class IUserUpdate(UsersBase):

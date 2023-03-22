@@ -16,11 +16,11 @@ from app.match_history.crud import match_history_crud, current_season_summaries_
 router = APIRouter()
 
 
-@router.get("")
+@router.get("", response_model=IResponseBase[IMatchHistoriesRead])
 def get_match_history(
     summoner_name: str,
     db_session=Depends(get_db),
-) -> IResponseBase[IMatchHistoriesRead]:
+):
     """
     유저의 전적 정보 불러오기
     """
@@ -37,8 +37,7 @@ def get_match_history(
 def put_match_history(
     summoner_name: str,
     db_session=Depends(get_db),
-    # ) -> IResponseBase[IMatchHistoriesRead]:
-):
+) -> IResponseBase[IMatchHistoriesRead]:
     """
     유저의 정보를 최신으로 갱신
 
@@ -150,6 +149,7 @@ def put_match_history(
              LIMIT 3
             ;
             """,
+            # 쿼리 안의 값을 조정할 수 있다.
             input_params={
                 "current_season_summary_id": current_season_summarie.id,
                 "summoner_name": summoner_name,
@@ -202,7 +202,7 @@ def put_match_history(
             },
         )
 
-    return current_season_summarie
+    return ""
 
     # return create_response(data=match_historeis)
     return create_response(data={})
@@ -243,9 +243,6 @@ def add_match_history(
     match_ids = riot_api.get_match_list(count=50, start_time=start_time)
 
     while match_ids:
-        print(len(match_histories))
-        print(start_time)
-
         for match_id in match_ids:
             match_histories.append(riot_api.get_match_info_by_id(match_id=match_id))
 

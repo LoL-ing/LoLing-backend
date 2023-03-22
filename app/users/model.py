@@ -2,8 +2,8 @@ from datetime import datetime, timedelta
 from typing import Optional
 from sqlalchemy.sql import func
 
-from sqlmodel import Field
-from app.common.model import BaseIdModel, BaseLolProfile, SQLModel
+from sqlmodel import Field, Relationship
+from app.common.model import BaseIdModel, BaseLolProfile, SQLModel, Schools
 
 from app.database import Base
 
@@ -16,15 +16,25 @@ class UsersBase(SQLModel):
     self_desc: str = Field(max_length=200)
     phone_num: str = Field(max_length=11)
 
+    school_id: int = Field(..., foreign_key=Schools.id)
+
 
 class Users(UsersBase, table=True):
     __tablename__ = "USERS"
     hashed_password: str = Field(max_length=200, description="암호화 pw")
     manner_tier: Optional[str] = Field(max_length=20, nullable=True)
-    curr_lol_account: Optional[str] = Field(max_length=30, nullable=True)
+    curr_lol_account: Optional[str] = Field(max_length=100, nullable=True)
     like_cnt: int = Field(default=0)
     hate_cnt: int = Field(default=0)
     profile_image_uri: Optional[str] = Field(max_length=200, nullable=True)
+    
+    school: Schools = Relationship(
+        sa_relationship_kwargs={
+            "lazy": "selectin",
+            "primaryjoin": "Users.school_id==Schools.id",
+        }
+    )
+
     updated_at: datetime = Field(
         default_factory=lambda: datetime.utcnow() + timedelta(hours=9),
         sa_column_kwargs={"onupdate": lambda: datetime.utcnow() + timedelta(hours=9)},
