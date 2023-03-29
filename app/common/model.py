@@ -28,11 +28,12 @@ class BaseIdModel(SQLModel):
         nullable=False,
     )
     updated_at: datetime = Field(
+        nullable=True,
         default_factory=lambda: datetime.utcnow() + timedelta(hours=9),
         sa_column_kwargs={"onupdate": lambda: datetime.utcnow() + timedelta(hours=9)},
     )
     created_at: datetime = Field(
-        default_factory=lambda: datetime.utcnow() + timedelta(hours=9)
+        nullable=True, default_factory=lambda: datetime.utcnow() + timedelta(hours=9)
     )
 
 
