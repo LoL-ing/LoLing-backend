@@ -16,7 +16,7 @@ class UsersBase(SQLModel):
     self_desc: str = Field(max_length=200)
     phone_num: str = Field(max_length=11)
 
-    school_id: int = Field(..., foreign_key=Schools.id)
+    school_id: int = Field(..., foreign_key=Schools.id, nullable=True)
 
 
 class Users(UsersBase, table=True):
@@ -27,7 +27,7 @@ class Users(UsersBase, table=True):
     like_cnt: int = Field(default=0)
     hate_cnt: int = Field(default=0)
     profile_image_uri: Optional[str] = Field(max_length=200, nullable=True)
-    
+
     school: Schools = Relationship(
         sa_relationship_kwargs={
             "lazy": "selectin",
