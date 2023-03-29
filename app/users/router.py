@@ -111,6 +111,7 @@ def create_user(
             self_desc=self_desc,
             phone_num=phone_num,
             curr_lol_account=puu_id,
+            school_id=1,
         )
         user = user_crud.create(
             obj_in=user_create,
