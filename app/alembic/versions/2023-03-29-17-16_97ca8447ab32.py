@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 2496c9b62ff2
+Revision ID: 97ca8447ab32
 Revises: 
-Create Date: 2023-02-27 21:16:28.366441
+Create Date: 2023-03-29 17:16:50.256080
 
 """
 from alembic import op
@@ -12,7 +12,7 @@ import sqlmodel
 
 
 # revision identifiers, used by Alembic.
-revision = '2496c9b62ff2'
+revision = '97ca8447ab32'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -46,19 +46,13 @@ def upgrade() -> None:
         batch_op.create_index(batch_op.f('ix_BOARDS_id'), ['id'], unique=False)
 
     op.create_table('CHAMPIONS',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), nullable=False),
-    sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('name_en', sqlmodel.sql.sqltypes.AutoString(length=20), nullable=False),
     sa.Column('name_kr', sqlmodel.sql.sqltypes.AutoString(length=15), nullable=False),
     sa.Column('image_url', sqlmodel.sql.sqltypes.AutoString(length=2083), nullable=True),
-    sa.PrimaryKeyConstraint('id'),
+    sa.PrimaryKeyConstraint('name_en'),
     sa.UniqueConstraint('name_en'),
     sa.UniqueConstraint('name_kr')
     )
-    with op.batch_alter_table('CHAMPIONS', schema=None) as batch_op:
-        batch_op.create_index(batch_op.f('ix_CHAMPIONS_id'), ['id'], unique=False)
-
     op.create_table('COMMENTS',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('updated_at', sa.DateTime(), nullable=False),
@@ -74,19 +68,19 @@ def upgrade() -> None:
         batch_op.create_index(batch_op.f('ix_COMMENTS_id'), ['id'], unique=False)
 
     op.create_table('CURRENT_SEASON_SUMMARIES',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), nullable=False),
-    sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('losses', sa.Integer(), nullable=False),
     sa.Column('lp', sa.Integer(), nullable=False),
     sa.Column('queue_id', sa.Integer(), nullable=False),
     sa.Column('rank', sa.Integer(), nullable=False),
     sa.Column('summoner_id', sqlmodel.sql.sqltypes.AutoString(length=47), nullable=False),
+    sa.Column('puu_id', sqlmodel.sql.sqltypes.AutoString(length=78), nullable=False),
     sa.Column('tier_id', sa.Integer(), nullable=False),
     sa.Column('wins', sa.Integer(), nullable=False),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('lp'),
-    sa.UniqueConstraint('summoner_id')
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.PrimaryKeyConstraint('puu_id', 'id'),
+    sa.UniqueConstraint('lp')
     )
     with op.batch_alter_table('CURRENT_SEASON_SUMMARIES', schema=None) as batch_op:
         batch_op.create_index(batch_op.f('ix_CURRENT_SEASON_SUMMARIES_id'), ['id'], unique=False)
@@ -103,16 +97,10 @@ def upgrade() -> None:
         batch_op.create_index(batch_op.f('ix_ITEMS_id'), ['id'], unique=False)
 
     op.create_table('LINES',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), nullable=False),
-    sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('name', sqlmodel.sql.sqltypes.AutoString(length=10), nullable=False),
     sa.Column('image_url', sqlmodel.sql.sqltypes.AutoString(length=2083), nullable=True),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('name')
     )
-    with op.batch_alter_table('LINES', schema=None) as batch_op:
-        batch_op.create_index(batch_op.f('ix_LINES_id'), ['id'], unique=False)
-
     op.create_table('LOL_PROFILES',
     sa.Column('puu_id', sqlmodel.sql.sqltypes.AutoString(length=78), nullable=False),
     sa.Column('updated_at', sa.DateTime(), nullable=False),
@@ -122,15 +110,12 @@ def upgrade() -> None:
     sa.Column('summoner_id', sqlmodel.sql.sqltypes.AutoString(length=47), nullable=False),
     sa.Column('summoner_level', sa.Integer(), nullable=False),
     sa.Column('summoner_name', sqlmodel.sql.sqltypes.AutoString(length=20), nullable=False),
-    sa.Column('user_id', sa.Integer(), nullable=False),
-    sa.Column('last_updated_at', sa.DateTime(), nullable=False),
+    sa.Column('user_id', sqlmodel.sql.sqltypes.AutoString(length=100), nullable=False),
+    sa.Column('last_updated_at', sa.DateTime(), nullable=True),
     sa.PrimaryKeyConstraint('puu_id'),
     sa.UniqueConstraint('summoner_id')
     )
     op.create_table('MATCH_HISTORIES',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), nullable=False),
-    sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('level', sa.Integer(), nullable=False),
     sa.Column('CS', sa.Integer(), nullable=False),
     sa.Column('item_0_id', sa.Integer(), nullable=False),
@@ -150,17 +135,48 @@ def upgrade() -> None:
     sa.Column('play_time', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('queue_type', sa.Integer(), nullable=False),
     sa.Column('summoner_name', sqlmodel.sql.sqltypes.AutoString(length=20), nullable=False),
-    sa.Column('match_id', sqlmodel.sql.sqltypes.AutoString(length=10), nullable=False),
+    sa.Column('match_id', sqlmodel.sql.sqltypes.AutoString(length=100), nullable=False),
     sa.Column('line_name', sqlmodel.sql.sqltypes.AutoString(length=20), nullable=False),
     sa.Column('champion_name_en', sqlmodel.sql.sqltypes.AutoString(length=20), nullable=False),
     sa.Column('kill', sa.Integer(), nullable=False),
     sa.Column('death', sa.Integer(), nullable=False),
     sa.Column('assist', sa.Integer(), nullable=False),
     sa.Column('win_or_lose', sa.Integer(), nullable=False),
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
     with op.batch_alter_table('MATCH_HISTORIES', schema=None) as batch_op:
         batch_op.create_index(batch_op.f('ix_MATCH_HISTORIES_id'), ['id'], unique=False)
+
+    op.create_table('MOST_CHAMPION_SUMMARIES',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.Column('current_season_summary_id', sa.Integer(), nullable=False),
+    sa.Column('champion_name', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+    sa.Column('kda', sa.Float(), nullable=False),
+    sa.Column('win_rate', sa.Float(), nullable=False),
+    sa.Column('count', sa.Integer(), nullable=False),
+    sa.PrimaryKeyConstraint('id')
+    )
+    with op.batch_alter_table('MOST_CHAMPION_SUMMARIES', schema=None) as batch_op:
+        batch_op.create_index(batch_op.f('ix_MOST_CHAMPION_SUMMARIES_id'), ['id'], unique=False)
+
+    op.create_table('MOST_LINE_SUMMARIES',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.Column('current_season_summary_id', sa.Integer(), nullable=False),
+    sa.Column('line_name', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+    sa.Column('kda', sa.Float(), nullable=False),
+    sa.Column('win_rate', sa.Float(), nullable=False),
+    sa.Column('count', sa.Integer(), nullable=False),
+    sa.PrimaryKeyConstraint('id')
+    )
+    with op.batch_alter_table('MOST_LINE_SUMMARIES', schema=None) as batch_op:
+        batch_op.create_index(batch_op.f('ix_MOST_LINE_SUMMARIES_id'), ['id'], unique=False)
 
     op.create_table('POSTS',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -208,7 +224,6 @@ def upgrade() -> None:
     sa.Column('message_id', sqlmodel.sql.sqltypes.AutoString(length=24), nullable=False),
     sa.Column('to_user_id', sa.Integer(), nullable=False),
     sa.Column('type', sqlmodel.sql.sqltypes.AutoString(length=8), nullable=False),
-    sa.Column('test', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('message_id')
     )
@@ -281,7 +296,6 @@ def upgrade() -> None:
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('name', sqlmodel.sql.sqltypes.AutoString(length=30), nullable=False),
     sa.Column('image_url', sqlmodel.sql.sqltypes.AutoString(length=2083), nullable=True),
-    sa.Column('test', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('name')
     )
@@ -302,18 +316,21 @@ def upgrade() -> None:
 
     op.create_table('USERS',
     sa.Column('signin_id', sqlmodel.sql.sqltypes.AutoString(length=30), nullable=False),
-    sa.Column('hashed_password', sqlmodel.sql.sqltypes.AutoString(length=200), nullable=False),
+    sa.Column('password', sqlmodel.sql.sqltypes.AutoString(length=200), nullable=False),
     sa.Column('name', sqlmodel.sql.sqltypes.AutoString(length=20), nullable=False),
     sa.Column('username', sqlmodel.sql.sqltypes.AutoString(length=10), nullable=False),
     sa.Column('self_desc', sqlmodel.sql.sqltypes.AutoString(length=200), nullable=False),
     sa.Column('phone_num', sqlmodel.sql.sqltypes.AutoString(length=11), nullable=False),
-    sa.Column('manner_tier', sqlmodel.sql.sqltypes.AutoString(length=20), nullable=False),
-    sa.Column('curr_lol_account', sqlmodel.sql.sqltypes.AutoString(length=30), nullable=False),
+    sa.Column('school_id', sa.Integer(), nullable=True),
+    sa.Column('hashed_password', sqlmodel.sql.sqltypes.AutoString(length=200), nullable=False),
+    sa.Column('manner_tier', sqlmodel.sql.sqltypes.AutoString(length=20), nullable=True),
+    sa.Column('curr_lol_account', sqlmodel.sql.sqltypes.AutoString(length=100), nullable=True),
     sa.Column('like_cnt', sa.Integer(), nullable=False),
     sa.Column('hate_cnt', sa.Integer(), nullable=False),
-    sa.Column('profile_image_uri', sqlmodel.sql.sqltypes.AutoString(length=200), nullable=False),
+    sa.Column('profile_image_uri', sqlmodel.sql.sqltypes.AutoString(length=200), nullable=True),
     sa.Column('updated_at', sa.DateTime(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.ForeignKeyConstraint(['school_id'], ['SCHOOLS.id'], ),
     sa.PrimaryKeyConstraint('signin_id')
     )
     # ### end Alembic commands ###
@@ -366,14 +383,19 @@ def downgrade() -> None:
         batch_op.drop_index(batch_op.f('ix_POSTS_id'))
 
     op.drop_table('POSTS')
+    with op.batch_alter_table('MOST_LINE_SUMMARIES', schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f('ix_MOST_LINE_SUMMARIES_id'))
+
+    op.drop_table('MOST_LINE_SUMMARIES')
+    with op.batch_alter_table('MOST_CHAMPION_SUMMARIES', schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f('ix_MOST_CHAMPION_SUMMARIES_id'))
+
+    op.drop_table('MOST_CHAMPION_SUMMARIES')
     with op.batch_alter_table('MATCH_HISTORIES', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('ix_MATCH_HISTORIES_id'))
 
     op.drop_table('MATCH_HISTORIES')
     op.drop_table('LOL_PROFILES')
-    with op.batch_alter_table('LINES', schema=None) as batch_op:
-        batch_op.drop_index(batch_op.f('ix_LINES_id'))
-
     op.drop_table('LINES')
     with op.batch_alter_table('ITEMS', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('ix_ITEMS_id'))
@@ -387,9 +409,6 @@ def downgrade() -> None:
         batch_op.drop_index(batch_op.f('ix_COMMENTS_id'))
 
     op.drop_table('COMMENTS')
-    with op.batch_alter_table('CHAMPIONS', schema=None) as batch_op:
-        batch_op.drop_index(batch_op.f('ix_CHAMPIONS_id'))
-
     op.drop_table('CHAMPIONS')
     with op.batch_alter_table('BOARDS', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('ix_BOARDS_id'))
