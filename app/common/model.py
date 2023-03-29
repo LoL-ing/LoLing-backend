@@ -30,7 +30,8 @@ class BaseIdModel(SQLModel):
     updated_at: datetime = Field(
         nullable=True,
         default_factory=lambda: datetime.utcnow() + timedelta(hours=9),
-        sa_column_kwargs={"onupdate": lambda: datetime.utcnow() + timedelta(hours=9)},
+        sa_column_kwargs={
+            "onupdate": lambda: datetime.utcnow() + timedelta(hours=9)},
     )
     created_at: datetime = Field(
         nullable=True, default_factory=lambda: datetime.utcnow() + timedelta(hours=9)
@@ -46,7 +47,8 @@ class BaseLolProfile(SQLModel):
     )
     updated_at: datetime = Field(
         default_factory=lambda: datetime.utcnow() + timedelta(hours=9),
-        sa_column_kwargs={"onupdate": lambda: datetime.utcnow() + timedelta(hours=9)},
+        sa_column_kwargs={
+            "onupdate": lambda: datetime.utcnow() + timedelta(hours=9)},
     )
     created_at: datetime = Field(
         default_factory=lambda: datetime.utcnow() + timedelta(hours=9)
@@ -75,7 +77,8 @@ class Champions(SQLModel, table=True):
 
 class Items(BaseIdModel, table=True):
     __tablename__ = "ITEMS"
-    name: str = Field(max_length=50, nullable=False, description="item 의 이름이다.")
+    name: str = Field(max_length=50, nullable=False,
+                      description="item 의 이름이다.")
     image_url: str = Field(
         max_length=2083, nullable=True, description="champion 에 해당하는 image 의 url 값이다."
     )

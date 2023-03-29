@@ -80,7 +80,9 @@ def exec_sql_file(sql_file, p_lol_name=""):
 def exec_query(conn, query_str, select_flag=True, get_insert_id=False, input_params={}):
     try:
         conn = get_rds_db_connection()
-        cursor: mysql.connector.connection.MySQLCursor = conn.cursor(dictionary=True)
+        cursor: mysql.connector.connection.MySQLCursor = conn.cursor(
+            dictionary=True)
+        print(query_str)
         cursor.execute(query_str, input_params)
 
         if select_flag:

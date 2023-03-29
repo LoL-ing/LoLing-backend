@@ -61,6 +61,7 @@ def put_match_history(
     puu_id = summoner_info.get("puuid", "")
 
     league_infos = riot_api.get_league_info()
+    print(league_infos)
 
     # 2
     match_histories = match_history_crud.get_user_match_histories(
@@ -105,7 +106,8 @@ def put_match_history(
             )
         # 존재하지 않을 때
         else:
-            current_season_summaries_crud.create(obj_in=obj_new, db_session=db_session)
+            current_season_summaries_crud.create(
+                obj_in=obj_new, db_session=db_session)
 
             current_season_summarie = current_season_summaries_crud.get_by_puu_id_queue(
                 puu_id=puu_id, queue_id=queue, db_session=db_session
@@ -227,7 +229,8 @@ def add_match_history(
     puu_id = summoner_info.get("puuid", "")
 
     # * TODO token 기반 user get 으로 변경
-    current_lol_profile = lol_profiles_crud.get(puu_id=puu_id, db_session=db_session)
+    current_lol_profile = lol_profiles_crud.get(
+        puu_id=puu_id, db_session=db_session)
     if current_lol_profile == None:
         return create_response(message="no lol_profile", data={})
 
@@ -235,7 +238,8 @@ def add_match_history(
     last_updated_at = current_lol_profile.last_updated_at
     start_time = int(
         time.mktime(
-            datetime.strptime(str(last_updated_at), "%Y-%m-%d %H:%M:%S").timetuple()
+            datetime.strptime(str(last_updated_at),
+                              "%Y-%m-%d %H:%M:%S").timetuple()
         )
     )
     match_histories = []
@@ -244,14 +248,16 @@ def add_match_history(
 
     while match_ids:
         for match_id in match_ids:
-            match_histories.append(riot_api.get_match_info_by_id(match_id=match_id))
+            match_histories.append(
+                riot_api.get_match_info_by_id(match_id=match_id))
 
         match_histories = sorted(
             match_histories,
             key=lambda item: item.get("info", {}).get("gameStartTimestamp"),
         )
 
-        start_time = match_histories[0].get("info", {}).get("gameStartTimestamp")
+        start_time = match_histories[0].get(
+            "info", {}).get("gameStartTimestamp")
 
         match_ids = riot_api.get_match_list(count=100, start_time=start_time)
 
@@ -282,8 +288,10 @@ def add_match_history(
                     .get("style"),
                     season=match.get("info", {}).get("gameVersion", ""),
                     gold=participant.get("goldEarned", ""),
-                    play_duration=str(match.get("info", {}).get("gameDuration", "")),
-                    play_time=str(match.get("info", {}).get("gameStartTimestamp", "")),
+                    play_duration=str(
+                        match.get("info", {}).get("gameDuration", "")),
+                    play_time=str(match.get("info", {}).get(
+                        "gameStartTimestamp", "")),
                     queue_type=match.get("info", {}).get("queueId", ""),
                     summoner_name=participant.get("summonerName", ""),
                     match_id=match.get("metadata", {}).get("matchId", ""),
