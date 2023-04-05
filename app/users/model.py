@@ -50,7 +50,7 @@ class Relationships(BaseIdModel, table=True):
         nullable=False,
         description="request가 response 되었는지(Y = 1/N = 0)에 대한 상태를 나타낸다.",
     )
-    from_user_id: int = Field(
+    from_user_id: str = Field(
         nullable=False, description="matching이나 friend request를 거는 user의 고유 번호. "
     )
     message_id: str = Field(
@@ -58,7 +58,7 @@ class Relationships(BaseIdModel, table=True):
         unique=True,
         description="matching이나 friend request를 거는 user가, 받는 user에게 보내는 메세지.",
     )
-    to_user_id: int = Field(
+    to_user_id: str = Field(
         nullable=False, description="matching이나 friend request를 받는 user 의 고유 번호. "
     )
     type: str = Field(

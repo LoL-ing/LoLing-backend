@@ -16,7 +16,7 @@ router = APIRouter()
 @router.get("/lolprofile")
 def get_my_lol_profile(
     # decoded_token=Depends(auth_required),
-    db_session=Depends(get_db)
+    db_session=Depends(get_db),
 ):
     """
     1. 치훈이가 짠 쿼리 -> (LOL_PROFILES, CURRENT_SEASON_SUMMARIES)
@@ -51,8 +51,7 @@ def get_my_lol_profile(
          ;
     """
 
-    summoner_info = exec_query(db_session, query, input_params={
-                               'signin_id': signin_id})
+    summoner_info = exec_query(db_session, query, input_params={"signin_id": signin_id})
 
     query_2 = f"""
         SELECT MCS.*, C.image_url as image_url, CSS.queue_id as queue_id
@@ -68,8 +67,18 @@ def get_my_lol_profile(
 
     most_champs = exec_query(db_session, query_2)
 
-    most_champs = list(map(lambda item: {'queue_id': item.get('queue_id'), 'img': item.get('image_url'), 'win_rate':  item.get(
-        'win_rate', 0), 'kda': item.get('kda', 0), 'champion_name': item.get('champion_name')}, most_champs))
+    most_champs = list(
+        map(
+            lambda item: {
+                "queue_id": item.get("queue_id"),
+                "img": item.get("image_url"),
+                "win_rate": item.get("win_rate", 0),
+                "kda": item.get("kda", 0),
+                "champion_name": item.get("champion_name"),
+            },
+            most_champs,
+        )
+    )
 
     query_3 = f"""
         SELECT MLS.*, L.image_url as image_url, CSS.queue_id as queue_id, L.name as line_name
@@ -84,24 +93,45 @@ def get_my_lol_profile(
     """
     most_lines = exec_query(db_session, query_3)
 
-    most_lines = list(map(lambda item: {'queue_id': item.get('queue_id'), 'img': item.get('image_url'), 'win_rate':  item.get(
-        'win_rate', 0), 'kda': item.get('kda', 0), 'line': item.get('line_name', 'NONE')}, most_lines))
+    most_lines = list(
+        map(
+            lambda item: {
+                "queue_id": item.get("queue_id"),
+                "img": item.get("image_url"),
+                "win_rate": item.get("win_rate", 0),
+                "kda": item.get("kda", 0),
+                "line": item.get("line_name", "NONE"),
+            },
+            most_lines,
+        )
+    )
 
     ret = []
 
     for info in summoner_info:
-        champs = list(filter(lambda item: item.get("queue_id") ==
-                             info.get("queue_id"), most_champs))
-        lines = list(filter(lambda item: item.get("queue_id")
-                            == info.get("queue_id"), most_lines))
+        champs = list(
+            filter(
+                lambda item: item.get("queue_id") == info.get("queue_id"), most_champs
+            )
+        )
+        lines = list(
+            filter(
+                lambda item: item.get("queue_id") == info.get("queue_id"), most_lines
+            )
+        )
 
-        ret.append({**info, "champions": champs,
-                    "positions": lines, })
+        ret.append(
+            {
+                **info,
+                "champions": champs,
+                "positions": lines,
+            }
+        )
 
     return ret
 
 
-@ router.get("/profile", response_model=IResponseBase[IUserRead])
+@router.get("/profile", response_model=IResponseBase[IUserRead])
 def get_my_profile(decoded_token=Depends(auth_required), db_session=Depends(get_db)):
     """
         - Header 의 token 을 파싱해서 user_id 를 받아온다
@@ -125,10 +155,8 @@ def get_my_profile(decoded_token=Depends(auth_required), db_session=Depends(get_
     return create_response(data=user)
 
 
-@ router.get(
+@router.get(
     "",
-
-
 )
 def get_user(signin_id: str, db_session=Depends(get_db)):
     user = user_crud.get(signin_id=signin_id, db_session=db_session)
@@ -138,7 +166,7 @@ def get_user(signin_id: str, db_session=Depends(get_db)):
     return create_response(data=as_dict(user), message="get_user")
 
 
-@ router.post("")
+@router.post("")
 def create_user(
     summoner_name: str,
     signin_id: str = Body(),
